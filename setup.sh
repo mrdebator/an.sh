@@ -19,8 +19,21 @@ function check_os() {
     esac
 }
 
-function is_zsh() {
-    # Check environment variable
+# Use a combination of readlink and dirname to determine location of script.
+function get_script_dir() {
+    # BASH_SOURCE[0] holds the path to the currently executing script.
+    SOURCE="${BASH_SOURCE[0]}"
+    # Use a loop to handle the case where the script may be a symlink.
+    while [[ -L "$SOURCE" ]]; do 
+        # Use a subshell and `dirname` to resolve the directory containing the symlink.
+        DIR="$( cd -P "$( dirname "$SOURCE" )" &> /dev/null && pwd )"
+        # Resolve symlink using `readlink`.
+        SOURCE="$(readlink "$SOURCE")"
+        # Handle relative symlinks.
+        [[ "$SOURCE" != /* ]] && SOURCE="$DIR/$SOURCE"
+    done
+    DIR="$( cd -P "$( dirname "$SOURCE" )" &> /dev/null && pwd )"
+    echo "$DIR"
 }
 
 # ------ Set Shell Options ------
@@ -53,6 +66,15 @@ fi
 
 echo "[+] Primary package manager: $packageManager"
 
+# ------ Ensure `git` is Installed ------
+
+if ! command -v git &> /dev/null; then 
+    echo "[-] Git is not installed. Installing..."
+    $packageManager install git
+fi
+
+# TODO: Add code block here to automatically pull the latest changes of this repository before proceeding.
+
 # ------ Change Shell in Linux to ZSH ------
 
 if [ "$(check_os)" == "Linux" ]; then
@@ -74,11 +96,15 @@ if [ "$(check_os)" == "Linux" ]; then
     fi
 fi
 
-# ------ Check & Install OhMyZsh ------
+# ------ Backup Existing Dotfiles ------
+# TODO: Add functionality to restore original configuration.
 
+backupDir=$(get_script_dir)/.dotfiles.bak
+mkdir backupDir
 
-
-
+# TODO: Dynamically locate dotfiles to backup.
+cp "$HOME/.zshrc" "$backupDir/.zshrc.bak"
+cp "$HOME/.tmux.conf" "$backupDir/.tmux.conf.bak"
 
 
 # TODO: 
@@ -93,10 +119,18 @@ fi
 
 #     # Install zsh-autosuggestions
 #     git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+#     # Install zsh-autosuggestions
+#     git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 
 #     # Install zsh-syntax-highlighting
 #     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+#     # Install zsh-syntax-highlighting
+#     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 
+#     # Add plugins to .zshrc
+# else
+#     echo "boo"
+# fi
 #     # Add plugins to .zshrc
 # else
 #     echo "boo"
