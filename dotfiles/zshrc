@@ -11,9 +11,9 @@ fi
 source "${ZINIT_HOME}/zinit.zsh"
 
 # Add git plugin.
-zi snippet OMZL::git.zsh
-zi snippet OMZP::git
-zi cdclear -q
+# zi snippet OMZL::git.zsh
+# zi snippet OMZP::git
+# zi cdclear -q
 
 # Set theme.
 zinit snippet https://github.com/mrdebator/an.sh/blob/main/themes/mrdebator.zsh-theme
