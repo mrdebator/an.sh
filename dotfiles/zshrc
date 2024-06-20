@@ -10,11 +10,14 @@ fi
 # Source zinit.
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Add snippets.
-zinit snippet OMZP::git
+# Add git plugin.
+zi snippet OMZL::git.zsh
+zi snippet OMZP::git
+zi cdclear -q
 
 # Set theme.
 zinit snippet https://github.com/mrdebator/an.sh/blob/main/themes/mrdebator.zsh-theme
+# zi snippet OMZT::agnoster
 
 # Add zsh plugins.
 zinit light zsh-users/zsh-syntax-highlighting
