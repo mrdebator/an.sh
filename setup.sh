@@ -57,11 +57,11 @@ HOME=${HOME:-$(cd ~ && pwd)}
 
 packageManager=""
 
-if command -v apt &> /dev/null ; then 
-    packageManager="apt"
-elif command -v brew &> /dev/null ; then 
+if command -v brew &> /dev/null ; then 
     packageManager="brew"
     # TODO: Check if homebrew is installed. If not, install it.
+elif command -v apt &> /dev/null ; then 
+    packageManager="apt"
 elif command -v pacman &> /dev/null ; then 
     packageManager="pacman"
 fi
@@ -176,7 +176,7 @@ tmuxDir="${XDG_CONFIG_HOME:-${HOME}/.config}/tmux"
 # Install catppuccin tmux theme. (https://github.com/catppuccin/tmux?tab=readme-ov-file#installation)
 if [ ! -d "$tmuxDir/plugins/catppuccin" ]; then
     echo "[-] Catppuccin not installed. Installing..."
-    git clone https://github.com/catppuccin/tmux?tab=readme-ov-file#configuration-options "$tmuxDir/plugins/catppuccin"
+    git clone https://github.com/catppuccin/tmux.git "$tmuxDir/plugins/catppuccin"
 fi
 
 cp "$dotfilesDir/tmux.conf" "$tmuxDir/tmux.conf"

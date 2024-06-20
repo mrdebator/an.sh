@@ -10,7 +10,10 @@ fi
 # Source zinit.
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Set theme
+# Add snippets.
+zinit snippet OMZP::git
+
+# Set theme.
 zinit snippet https://github.com/mrdebator/an.sh/blob/main/themes/mrdebator.zsh-theme
 
 # Add zsh plugins.
@@ -41,4 +44,3 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 # Aliases
-alias ls='ls --color'

@@ -1,6 +1,6 @@
 # mrdebator.zsh-theme - A theme for ZSH
 #
-# Author: Ansh
+# Author: Ansh (mrdebator)
 # URL: https://anshc.me/
 
 setopt promptsubst
@@ -30,7 +30,7 @@ ZSH_THEME_GIT_PROMPT_SUFFIX="%{$GIT_PROMPT_INFO%})"
 ZSH_THEME_GIT_PROMPT_DIRTY=" %{$GIT_DIRTY_COLOR%}✘"
 ZSH_THEME_GIT_PROMPT_CLEAN=" %{$GIT_CLEAN_COLOR%}✔"
 
-ZSH_THEME_GIT_PROMPT_ADDED="%{$FG[103]%}✚%{$rset_color%}"
+ZSH_THEME_GIT_PROMPT_ADDED="%{$FG[103]%}✚%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_MODIFIED="%{$FG[103]%}✹%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_DELETED="%{$FG[103]%}✖%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_RENAMED="%{$FG[103]%}➜%{$reset_color%}"
