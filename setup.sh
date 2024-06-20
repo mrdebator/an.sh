@@ -97,7 +97,7 @@ fi
 
 # Backup ~/.bashrc
 if [ -f "$HOME/.bashrc" ]; then
-    cp "$HOME/.bashrc" "$backupDir/.bashrc.bak"
+    mv "$HOME/.bashrc" "$backupDir/.bashrc.bak"
     echo "[+] Backed up .bashrc."
 else 
     echo "[-] .bashrc doesn't exist."
@@ -120,7 +120,7 @@ if ! command -v tmux &> /dev/null; then
 else 
     # Backup ~/.tmux.conf
     if [ -f "$HOME/.tmux.conf" ]; then 
-        cp "$HOME/.tmux.conf" "$backupDir/.tmux.conf.bak"    
+        mv "$HOME/.tmux.conf" "$backupDir/.tmux.conf.bak"    
         echo "[+] Backed up .tmux.conf."
     else 
         echo "[-] .tmux.conf doesn't exist."
@@ -132,6 +132,11 @@ if ! command -v vim &> /dev/null; then
     echo "[-] vim is not installed. Installing..."
     $packageManager install vim
     # TODO: Back up .vimrc.
+fi
+
+if ! command -v bat &> /dev/null; then 
+    echo "[-] bat is not installed. Installing..."
+    $packageManager install bat
 fi
 
 # TODO: Add support for fzf.
@@ -159,11 +164,43 @@ fi
 
 # ------ Set up .zshrc ------
 
-dotfilesDir=$(get_script_dir)/dotfiles
+# Install oh-my-zsh if not installed.
+if [[ "$ZSH" == "$HOME/.oh-my-zsh" ]]; then 
+    echo "[+] Oh My Zsh is already installed."
+else 
+    # Use curl if available, default to wget.
+    if command -v curl &> /dev/null; then 
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    else 
+        sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    fi
+fi
 
+# Set Oh My Zsh specific directories.
+if [[ -d "$HOME/.oh-my-zsh" ]]; then 
+    zshCustom="$HOME/.oh-my-zsh/custom"
+
+    # Copy theme.
+    themeDir="$(get_script_dir)/themes"
+    cp "$themeDir/mrdebator.zsh-theme" "$zshCustom/themes"
+    echo "[+] Copied custom theme."
+
+    # Download plugins.
+    git clone https://github.com/zsh-users/zsh-autosuggestions "$zshCustom/plugins/zsh-autosuggestions"
+    git clone https://github.com/zsh-users/zsh-completions.git
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$zshCustom/plugins/zsh-syntax-highlighting"
+
+fi
+
+dotfilesDir="$(get_script_dir)/dotfiles"
 cp "$dotfilesDir/zshrc" "$HOME/.zshrc"
 echo "[+] Copied ZSH configuration."
 
+# Add alias for `bat`.
+batPath="$(command -v bat)"
+echo "alias cat=$batPath" >> "$HOME/.zshrc"
+
+# Add alias for updating `locate` database on MacOS
 if [ "$(check_os)" == "Darwin" ]; then
     echo 'alias updatedb="/usr/libexec/locate.updatedb"' >> "$HOME/.zshrc"
 fi

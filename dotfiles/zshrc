@@ -1,38 +1,26 @@
-# Set up directory for zinit
-ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-
-# Download Zinit, if it's not there yet.
-if [ ! -d "$ZINIT_HOME" ]; then 
-    mkdir -p "$(dirname $ZINIT_HOME)"
-    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-fi
-
-# Source zinit.
-source "${ZINIT_HOME}/zinit.zsh"
-
-# Add git plugin.
-# zi snippet OMZL::git.zsh
-# zi snippet OMZP::git
-# zi cdclear -q
+# Path to your Oh My Zsh installation.
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set theme.
-zinit snippet https://github.com/mrdebator/an.sh/blob/main/themes/mrdebator.zsh-theme
-# zi snippet OMZT::agnoster
+ZSH_THEME="mrdebator"
 
-# Add zsh plugins.
-zinit light zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-autosuggestions
-zinit light zsh-users/zsh-completions
+# Add plugins.
+plugins=(
+    git
+    zsh-autosuggestions
+    zsh-completions
+    zsh-syntax-highlighting
+)
 
-# Load completions.
-autoload -Uz compinit && compinit
-zinit cdreplay -q
+# Source oh-my-zsh.
+source $ZSH/oh-my-zsh.sh
 
 # History Optimizations
 HISTSIZE=5000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
+HIST_STAMPS="yyyy-mm-dd"
 setopt appendhistory
 setopt sharehistory
 setopt hist_ignore_space
