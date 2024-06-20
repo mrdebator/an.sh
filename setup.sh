@@ -19,21 +19,7 @@ function check_os() {
     esac
 }
 
-# Use a combination of readlink and dirname to determine location of script.
-function get_script_dir() {
-    # BASH_SOURCE[0] holds the path to the currently executing script.
-    SOURCE="${BASH_SOURCE[0]}"
-    # Use a loop to handle the case where the script may be a symlink.
-    while [[ -L "$SOURCE" ]]; do 
-        # Use a subshell and `dirname` to resolve the directory containing the symlink.
-        DIR="$( cd -P "$( dirname "$SOURCE" )" &> /dev/null && pwd )"
-        # Resolve symlink using `readlink`.
-        SOURCE="$(readlink "$SOURCE")"
-        # Handle relative symlinks.
-        [[ "$SOURCE" != /* ]] && SOURCE="$DIR/$SOURCE"
-    done
-    DIR="$( cd -P "$( dirname "$SOURCE" )" &> /dev/null && pwd )"
-    echo "$DIR"
+
 # Use a combination of readlink and dirname to determine location of script.
 function get_script_dir() {
     # BASH_SOURCE[0] holds the path to the currently executing script.
@@ -75,6 +61,7 @@ if command -v apt &> /dev/null ; then
     packageManager="apt"
 elif command -v brew &> /dev/null ; then 
     packageManager="brew"
+    # TODO: Check if homebrew is installed. If not, install it.
 elif command -v pacman &> /dev/null ; then 
     packageManager="pacman"
 fi
@@ -99,6 +86,56 @@ fi
 
 # TODO: Add code block here to automatically pull the latest changes of this repository before proceeding.
 
+# ------ Backup Shell Dotfiles ------
+
+# TODO: Add functionality to restore original configuration.
+
+backupDir=$(get_script_dir)/backups
+if [ ! -d "$backupDir" ]; then
+    mkdir "$backupDir"
+fi
+
+# Backup ~/.bashrc
+if [ -f "$HOME/.bashrc" ]; then
+    cp "$HOME/.bashrc" "$backupDir/.bashrc.bak"
+    echo "[+] Backed up .bashrc."
+else 
+    echo "[-] .bashrc doesn't exist."
+fi
+# Backup ~/.zshrc
+if [ -f "$HOME/.zshrc" ]; then 
+    cp "$HOME/.zshrc" "$backupDir/.zshrc.bak"
+    echo "[+] Backed up .zshrc."
+else 
+    echo "[-] .zshrc doesn't exist."
+fi
+
+# ------ Install Command Line Tools ------
+
+# TODO: Dynamically locate dotfiles to backup.
+
+if ! command -v tmux &> /dev/null; then 
+    echo "[-] tmux is not installed. Installing..."
+    $packageManager install tmux
+else 
+    # Backup ~/.tmux.conf
+    if [ -f "$HOME/.tmux.conf" ]; then 
+        cp "$HOME/.tmux.conf" "$backupDir/.tmux.conf.bak"    
+        echo "[+] Backed up .tmux.conf."
+    else 
+        echo "[-] .tmux.conf doesn't exist."
+    fi
+fi 
+
+# TODO: Switch to nvim setup.
+if ! command -v vim &> /dev/null; then
+    echo "[-] vim is not installed. Installing..."
+    $packageManager install vim
+    # TODO: Back up .vimrc.
+fi
+
+# TODO: Add support for fzf.
+
 # ------ Change Shell in Linux to ZSH ------
 
 if [ "$(check_os)" == "Linux" ]; then
@@ -120,92 +157,29 @@ if [ "$(check_os)" == "Linux" ]; then
     fi
 fi
 
-# ------ Backup Shell Dotfiles ------
+# ------ Set up .zshrc ------
 
-# TODO: Add functionality to restore original configuration.
+dotfilesDir=$(get_script_dir)/dotfiles
 
-backupDir=$(get_script_dir)/.dotfiles.bak
-if [ ! -d "$backupDir" ]; then
-    mkdir "$backupDir"
+cp "$dotfilesDir/zshrc" "$HOME/.zshrc"
+echo "[+] Copied ZSH configuration."
+
+if [ "$(check_os)" == "Darwin" ]; then
+    echo 'alias updatedb="/usr/libexec/locate.updatedb"' >> "$HOME/.zshrc"
 fi
 
-# Backup ~/.bashrc
-if [ -f "$HOME/.bashrc" ]; then
-    cp "$HOME/.bashrc" "$backupDir/.bashrc.bak"
-    echo "[+] Backed up .bashrc"
-else 
-    echo "[-] .bashrc doesn't exist"
-fi
-# Backup ~/.zshrc
-if [ -f "$HOME/.zshrc" ]; then 
-    cp "$HOME/.zshrc" "$backupDir/.zshrc.bak"
-    echo "[+] Backed up .zshrc"
-else 
-    echo "[-] .zshrc doesn't exist"
+# ------ Set up tmux ------
+
+# Set up tmux directory.
+tmuxDir="${XDG_CONFIG_HOME:-${HOME}/.config}/tmux"
+
+# Install catppuccin tmux theme. (https://github.com/catppuccin/tmux?tab=readme-ov-file#installation)
+if [ ! -d "$tmuxDir/plugins/catppuccin" ]; then
+    echo "[-] Catppuccin not installed. Installing..."
+    git clone https://github.com/catppuccin/tmux?tab=readme-ov-file#configuration-options "$tmuxDir/plugins/catppuccin"
 fi
 
-# ------ Install Command Line Tools ------
+cp "$dotfilesDir/tmux.conf" "$tmuxDir/tmux.conf"
+echo "[+] Copied TMUX configuration."
 
-# TODO: Dynamically locate dotfiles to backup.
-
-if ! command -v tmux &> /dev/null; then 
-    echo "[-] tmux is not installed. Installing..."
-    $packageManager install tmux
-else 
-    # Backup ~/.tmux.conf
-    if [ -f "$HOME/.tmux.conf" ]; then 
-        cp "$HOME/.tmux.conf" "$backupDir/.tmux.conf.bak"    
-        echo "[+] Backed up .tmux.conf"
-    else 
-        echo "[-] .tmux.conf doesn't exist"
-    fi
-fi 
-
-# TODO: Switch to nvim setup.
-if ! command -v vim &> /dev/null; then
-    echo "[-] vim is not installed. Installing..."
-    $packageManager install vim
-    # TODO: Back up .vimrc.
-fi
-
-
-
-# 
-
-
-# TODO: 
-# - Install and configure ohmyzsh with mrdebator theme for Mac and Linux
-# - Install zsh plugins
-# - Install VSCode with preferences and themes
-
-
-
-# if [ -n "`$SHELL -c 'echo $ZSH_VERSION'`" ]; then
-#     echo "Detected ZSH shell"
-
-#     # Install zsh-autosuggestions
-#     git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-#     # Install zsh-autosuggestions
-#     git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-#     # Install zsh-autosuggestions
-#     git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-
-#     # Install zsh-syntax-highlighting
-#     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-#     # Install zsh-syntax-highlighting
-#     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-#     # Install zsh-syntax-highlighting
-#     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-
-#     # Add plugins to .zshrc
-# else
-#     echo "boo"
-# fi
-#     # Add plugins to .zshrc
-# else
-#     echo "boo"
-# fi
-#     # Add plugins to .zshrc
-# else
-#     echo "boo"
-# fi
+# TODO: Add section to set up VSCode.
