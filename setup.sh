@@ -220,7 +220,7 @@ if [[ "$OS" == "Darwin" ]] && [[ "$packageManager" == "brew" ]]; then
     if [[ ! -d "${HOMEBREW_PREFIX:-/opt/homebrew}/Caskroom/font-jetbrains-mono-nerd-font" ]]; then
         $packageManager install --cask font-jetbrains-mono-nerd-font
     fi
-elif [[ "$OS" == "Linux" ]] && [[ ! -d "$HOME/.local/share/fonts/JetBrainsMono" ]]; then
+elif [[ "$OS" == "Linux" ]] && [[ ! -f "$HOME/.local/share/fonts/JetBrainsMonoNerdFont-Regular.ttf" ]]; then
     wget -P "$HOME/.local/share/fonts" https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip
     unzip "$HOME/.local/share/fonts/JetBrainsMono.zip"
     rm "$HOME/.local/share/fonts/JetBrainsMono.zip"
