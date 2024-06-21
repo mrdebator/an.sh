@@ -55,6 +55,5 @@ Clone this repository and run `setup.sh`.
 - [ ] Install Homebrew on MacOS if not installed.
 - [ ] Automatically pull latest changes to this repository before any setup.
 - [ ] Add feature to restore original configuration from backed up dotfiles.
-- [ ] Back up Vim configurations.
 - [ ] Switch to NeoVim.
 - [ ] Add support for VSCode configurations.
