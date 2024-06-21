@@ -1,5 +1,7 @@
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
+# Path to FZF installation.
+export FZF_BASE="$ZSH/plugins/fzf"
 
 # Set theme.
 ZSH_THEME="mrdebator"
@@ -8,6 +10,7 @@ ZSH_THEME="mrdebator"
 plugins=(
     git
     fzf
+    fzf-tab
     zsh-autosuggestions
     zsh-completions
     zsh-syntax-highlighting
@@ -34,13 +37,9 @@ setopt hist_find_no_dups
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 # Add color to autocompletions.
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-
-# --- fzf specifics ---
-
 # Force zsh not to show the completion menu, which allows fzf-tab to capture the unambiguous prefix.
 zstyle ':completion:*' menu no
-# Set list-colors to enable filename colorizing.
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
 # Show fzf powered tooltip for tab completions in `cd`.
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 # Disable sort when completing `git checkout`.
@@ -49,6 +48,6 @@ zstyle ':completion:*:git-checkout:*' sort false
 zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 
 # Shell Integrations
-eval "$(fzf --zsh)"
+source <(fzf --zsh)
 
 # Aliases
