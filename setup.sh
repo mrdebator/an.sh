@@ -205,10 +205,6 @@ if [[ -d "$HOME/.oh-my-zsh" ]]; then
         git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$zshCustom/plugins/zsh-syntax-highlighting"
         echo '[+] Installed zsh-syntax-highlighting.'
     fi
-    if [[ ! -d "$zshCustom/plugins/fzf-tab" ]]; then 
-        git clone https://github.com/Aloxaf/fzf-tab "$zshCustom/plugins/fzf-tab"
-        echo '[+] Installed fzf-tab.'
-    fi
 
 fi
 
