@@ -106,7 +106,11 @@ else
     echo "[-] .zshrc doesn't exist."
 fi
 
-# TODO: Back up .vimrc.
+# Back up ~/.vimrc
+if [ -f "$HOME/.vimrc" ]; then 
+    mv "$HOME/.vimrc" "$backupDir/.vimrc.bak"
+    echo "[+] Backed up .vimrc"
+fi
 
 # ------ Install Command Line Tools ------
 
@@ -248,5 +252,9 @@ fi
 
 cp "$dotfilesDir/tmux.conf" "$tmuxDir/tmux.conf"
 echo "[+] Copied TMUX configuration."
+
+# ------ Set up vim ------
+
+cp $dotfilesDir/vimrc "$HOME/.vimrc"
 
 # TODO: Add section to set up VSCode.
