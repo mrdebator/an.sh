@@ -19,7 +19,6 @@ function check_os() {
     esac
 }
 
-
 # Use a combination of readlink and dirname to determine location of script.
 function get_script_dir() {
     # BASH_SOURCE[0] holds the path to the currently executing script.
@@ -48,18 +47,24 @@ set -o errexit
 # Split shell arguments using whitespaces (like bash). Force result to be 'true' to avoid script termination.
 set -o shwordsplit 2>/dev/null || true 
 
-# ------ Find USER and HOME ------
+# ------ Find USER, HOME, and Operating System ------
 
 USER=${USER:-$(id -un)}
 HOME=${HOME:-$(cd ~ && pwd)}
+OS=$(check_os)
 
 # ------ Determine Package Manager ------
 
 packageManager=""
 
-if command -v brew &> /dev/null ; then 
-    packageManager="brew"
+if [[ "$OS" == "Darwin" ]]; then 
+    if command -v brew &> /dev/null ; then 
+        packageManager="brew"
     # TODO: Check if homebrew is installed. If not, install it.
+    else
+        echo "Homebrew not installed. Exiting..."
+        exit 1
+    fi
 elif command -v apt &> /dev/null ; then 
     packageManager="apt"
 elif command -v pacman &> /dev/null ; then 
@@ -67,15 +72,6 @@ elif command -v pacman &> /dev/null ; then
 fi
 
 echo "[+] Primary package manager: $packageManager"
-
-# ------ Ensure `git` is Installed ------
-
-if ! command -v git &> /dev/null; then 
-    echo "[-] Git is not installed. Installing..."
-    $packageManager install git
-fi
-
-# TODO: Add code block here to automatically pull the latest changes of this repository before proceeding.
 
 # ------ Ensure `git` is Installed ------
 
@@ -110,6 +106,8 @@ else
     echo "[-] .zshrc doesn't exist."
 fi
 
+# TODO: Back up .vimrc.
+
 # ------ Install Command Line Tools ------
 
 # TODO: Dynamically locate dotfiles to backup.
@@ -122,6 +120,9 @@ else
     if [ -f "$HOME/.tmux.conf" ]; then 
         mv "$HOME/.tmux.conf" "$backupDir/.tmux.conf.bak"    
         echo "[+] Backed up .tmux.conf."
+    elif [ -f "$HOME/.config/tmux/tmux.conf" ]; then 
+        mv "$HOME/.config/tmux/tmux.conf" "$backupDir/tmux.conf.bak"
+        echo "[+] Backed up .tmux.conf."
     else 
         echo "[-] .tmux.conf doesn't exist."
     fi
@@ -131,7 +132,6 @@ fi
 if ! command -v vim &> /dev/null; then
     echo "[-] vim is not installed. Installing..."
     $packageManager install vim
-    # TODO: Back up .vimrc.
 fi
 
 if ! command -v bat &> /dev/null; then 
@@ -143,7 +143,7 @@ fi
 
 # ------ Change Shell in Linux to ZSH ------
 
-if [ "$(check_os)" == "Linux" ]; then
+if [ "$OS" == "Linux" ]; then
     if command -v zsh &> /dev/null ; then 
         case $- in 
             *i*)
@@ -187,7 +187,7 @@ if [[ -d "$HOME/.oh-my-zsh" ]]; then
 
     # Download plugins.
     git clone https://github.com/zsh-users/zsh-autosuggestions "$zshCustom/plugins/zsh-autosuggestions"
-    git clone https://github.com/zsh-users/zsh-completions.git
+    git clone https://github.com/zsh-users/zsh-completions.git "$zshCustom/plugins/zsh-completions"
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$zshCustom/plugins/zsh-syntax-highlighting"
 
 fi
@@ -201,7 +201,7 @@ batPath="$(command -v bat)"
 echo "alias cat=$batPath" >> "$HOME/.zshrc"
 
 # Add alias for updating `locate` database on MacOS
-if [ "$(check_os)" == "Darwin" ]; then
+if [ "$OS" == "Darwin" ]; then
     echo 'alias updatedb="/usr/libexec/locate.updatedb"' >> "$HOME/.zshrc"
 fi
 
