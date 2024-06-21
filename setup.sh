@@ -186,9 +186,15 @@ if [[ -d "$HOME/.oh-my-zsh" ]]; then
     echo "[+] Copied custom theme."
 
     # Download plugins.
-    git clone https://github.com/zsh-users/zsh-autosuggestions "$zshCustom/plugins/zsh-autosuggestions"
-    git clone https://github.com/zsh-users/zsh-completions.git "$zshCustom/plugins/zsh-completions"
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$zshCustom/plugins/zsh-syntax-highlighting"
+    if [[ ! -d "$zshCustom/plugins/zsh-autosuggestions" ]]; then 
+        git clone https://github.com/zsh-users/zsh-autosuggestions "$zshCustom/plugins/zsh-autosuggestions"
+    fi
+    if [[ ! -d "$zshCustom/plugins/zsh-completions" ]]; then 
+        git clone https://github.com/zsh-users/zsh-completions.git "$zshCustom/plugins/zsh-completions"
+    fi 
+    if [[ ! -d "$zshCustom/plugins/zsh-syntax-highlighting" ]]; then 
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$zshCustom/plugins/zsh-syntax-highlighting"
+    fi
 
 fi
 
