@@ -59,4 +59,3 @@ Clone this repository and run `setup.sh`.
 - [ ] Switch to NeoVim.
 - [ ] Add support for fzf.
 - [ ] Add support for VSCode configurations.
-- [ ] Automatically download nerd fonts for tmux catppuccin.

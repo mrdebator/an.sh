@@ -209,6 +209,18 @@ fi
 
 # ------ Set up tmux ------
 
+# Install necessary fonts.
+if [[ "$OS" == "Darwin" ]] && [[ "$packageManager" == "brew" ]]; then
+    if [[ ! -d "${HOMEBREW_PREFIX:-/opt/homebrew}/Caskroom/font-jetbrains-mono-nerd-font" ]]; then
+        $packageManager install --cask font-jetbrains-mono-nerd-font
+    fi
+elif [[ "$OS" == "Linux" ]] && [[ ! -d "$HOME/.local/share/fonts/JetBrainsMono" ]]; then
+    wget -P "$HOME/.local/share/fonts" https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip
+    unzip "$HOME/.local/share/fonts/JetBrainsMono.zip"
+    rm "$HOME/.local/share/fonts/JetBrainsMono.zip"
+    fc-cache -fv
+fi
+
 # Set up tmux directory.
 tmuxDir="${XDG_CONFIG_HOME:-${HOME}/.config}/tmux"
 
