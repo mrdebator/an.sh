@@ -57,5 +57,4 @@ Clone this repository and run `setup.sh`.
 - [ ] Add feature to restore original configuration from backed up dotfiles.
 - [ ] Back up Vim configurations.
 - [ ] Switch to NeoVim.
-- [ ] Add support for fzf.
 - [ ] Add support for VSCode configurations.

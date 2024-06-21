@@ -112,6 +112,7 @@ fi
 
 # TODO: Dynamically locate dotfiles to backup.
 
+# Install Tmux.
 if ! command -v tmux &> /dev/null; then 
     echo "[-] tmux is not installed. Installing..."
     $packageManager install tmux
@@ -128,18 +129,24 @@ else
     fi
 fi 
 
+# Install Vim.
 # TODO: Switch to nvim setup.
 if ! command -v vim &> /dev/null; then
     echo "[-] vim is not installed. Installing..."
     $packageManager install vim
 fi
 
+# Install Bat.
 if ! command -v bat &> /dev/null; then 
     echo "[-] bat is not installed. Installing..."
     $packageManager install bat
 fi
 
-# TODO: Add support for fzf.
+# Install FZF.
+if ! command -v fzf &> /dev/null; then 
+    echo "[-] fzf not installed. Installing..."
+    $packageManager install fzf
+fi 
 
 # ------ Change Shell in Linux to ZSH ------
 
@@ -188,12 +195,19 @@ if [[ -d "$HOME/.oh-my-zsh" ]]; then
     # Download plugins.
     if [[ ! -d "$zshCustom/plugins/zsh-autosuggestions" ]]; then 
         git clone https://github.com/zsh-users/zsh-autosuggestions "$zshCustom/plugins/zsh-autosuggestions"
+        echo '[+] Installed zsh-autosuggestions.'
     fi
     if [[ ! -d "$zshCustom/plugins/zsh-completions" ]]; then 
         git clone https://github.com/zsh-users/zsh-completions.git "$zshCustom/plugins/zsh-completions"
+        echo '[+] Installed zsh-completions.'
     fi 
     if [[ ! -d "$zshCustom/plugins/zsh-syntax-highlighting" ]]; then 
         git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$zshCustom/plugins/zsh-syntax-highlighting"
+        echo '[+] Installed zsh-syntax-highlighting.'
+    fi
+    if [[ ! -d "$zshCustom/plugins/fzf-tab" ]]; then 
+        git clone https://github.com/Aloxaf/fzf-tab "$zshCustom/plugins/fzf-tab"
+        echo '[+] Installed fzf-tab.'
     fi
 
 fi

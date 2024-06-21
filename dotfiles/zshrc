@@ -7,6 +7,7 @@ ZSH_THEME="mrdebator"
 # Add plugins.
 plugins=(
     git
+    fzf
     zsh-autosuggestions
     zsh-completions
     zsh-syntax-highlighting
@@ -29,9 +30,25 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
 
-# Allow case-insensitive autocompletions
+# Allow case-insensitive autocompletions.
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-# Add color to autocompletions
+# Add color to autocompletions.
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
+# --- fzf specifics ---
+
+# Force zsh not to show the completion menu, which allows fzf-tab to capture the unambiguous prefix.
+zstyle ':completion:*' menu no
+# Set list-colors to enable filename colorizing.
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# Show fzf powered tooltip for tab completions in `cd`.
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+# Disable sort when completing `git checkout`.
+zstyle ':completion:*:git-checkout:*' sort false
+# Enable fzf popup within tmux.
+zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+
+# Shell Integrations
+eval "$(fzf --zsh)"
 
 # Aliases
