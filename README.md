@@ -58,4 +58,5 @@ Clone this repository and run `setup.sh`.
 - [ ] Back up Vim configurations.
 - [ ] Switch to NeoVim.
 - [ ] Add support for fzf.
-- [ ] Add support for VSCode configurations. 
+- [ ] Add support for VSCode configurations.
+- [ ] Automatically download nerd fonts for tmux catppuccin.

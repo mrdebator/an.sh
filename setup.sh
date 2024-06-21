@@ -197,8 +197,10 @@ cp "$dotfilesDir/zshrc" "$HOME/.zshrc"
 echo "[+] Copied ZSH configuration."
 
 # Add alias for `bat`.
-batPath="$(command -v bat)"
-echo "alias cat=$batPath" >> "$HOME/.zshrc"
+batPath=$(command -v bat || command -v batcat)
+if [ -n "$batPath" ]; then
+  echo "alias cat=$batPath" >> "$HOME/.zshrc"
+fi
 
 # Add alias for updating `locate` database on MacOS
 if [ "$OS" == "Darwin" ]; then
