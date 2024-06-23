@@ -34,4 +34,4 @@ set showmatch
 " Enable true color support "
 set termguicolors
 " Vim colorscheme "
-colorscheme desert
+colorscheme wildcharm
