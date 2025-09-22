@@ -19,14 +19,27 @@ return {
     },
     config = function()
         require("neo-tree").setup({
+            sources = { "filesystem", "buffers", "git_status", "document_symbols" },
             window = {
                 position = "right",
                 width = 40,
+                mappings = {
+                    ["b"] = function()
+                        require("neo-tree.command").execute({ toggle = true, source = "buffers" })
+                    end,
+                    ["g"] = function()
+                        require("neo-tree.command").execute({ toggle = true, source = "git_status" })
+                    end,
+                    ["s"] = function()
+                        require("neo-tree.command").execute({ toggle = true, source = "document_symbols" })
+                    end,
+                    ["f"] = function()
+                        require("neo-tree.command").execute({ toggle = true, source = "filesystem" })
+                    end,
+                }
             },
             filesystem = {
-
                 use_libuv_file_watcher = true,
-
                 filtered_items = {
                     hide_dotfiles = false,
                     hide_gitignored = false,
