@@ -23,6 +23,7 @@ opt.background = "dark"  -- tell vim what the background color looks like
 opt.signcolumn = "yes"   -- always show the sign column
 opt.cursorline = true
 opt.colorcolumn = "120"    -- Show a vertical line at column 120 as a guide
+opt.ambiwidth = "double"   -- Handling ambiguous width characters
 
 -- Vertical Separator
 opt.fillchars = {
@@ -42,6 +43,7 @@ opt.clipboard:append("unnamedplus") -- sync with system clipboard
 opt.swapfile = false                -- disable swap files
 opt.backup = false                  -- disable backup files
 opt.hidden = true                   -- switch between files without saving current file
+opt.mouse = "a"                     -- Enable mouse support for all modes
 
 -- Update Time
 opt.updatetime = 300
