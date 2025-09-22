@@ -316,7 +316,6 @@ install_nerd_font
 # ├── LICENSE
 # ├── archive/              # (Skipped by Stow)
 # ├── backups/              # (Skipped by Stow)
-# ├── themes/               # (Skipped by Stow)
 #
 # # -------------------------------------------------------------------
 # # STOW PACKAGES: Each directory below is a "package".
