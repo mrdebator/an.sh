@@ -11,6 +11,16 @@ return {
 
     telescope.setup({
       defaults = {
+        vimgrep_arguments = {
+            "rg",
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case",
+            "--hidden",
+        },
         layout_config = {
           width = 0.75,
           prompt_position = "top",
@@ -26,7 +36,7 @@ return {
       },
     })
 
-    telescope.load_extension("fzf")
+    pcall(telescope.load_extension, "fzf")
 
     -- Keymaps
     vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
@@ -37,5 +47,10 @@ return {
     vim.keymap.set("n", "<leader>fr", builtin.oldfiles, { desc = "Recent files" })
     vim.keymap.set("n", "<leader>gc", builtin.git_commits, { desc = "Git commits" })
     vim.keymap.set("n", "<leader>gb", builtin.git_branches, { desc = "Git branches" })
+    vim.keymap.set("n", "<leader>fw", builtin.grep_string, { desc = "Search for word under cursor" })
+    vim.keymap.set("n", "<leader>/", builtin.current_buffer_fuzzy_find, { desc = "Search in current buffer" })
+    vim.keymap.set("n", "<leader>fn", function()
+            builtin.find_files({ cwd = vim.fn.stdpath("config") })
+    end, { desc = "Search NeoVim config" })
   end,
 }
