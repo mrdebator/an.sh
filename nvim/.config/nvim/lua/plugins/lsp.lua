@@ -37,46 +37,59 @@ return {
             -- them with the capabilities from nvim-cmp (for autocompletion).
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-            -- This block uses the modern `setup_handlers` method to configure servers.
+            -- This block uses the modern `setup` method to configure servers.
             -- It automatically sets up any server that is installed via Mason and listed below.
-            require("mason-lspconfig").setup_handlers({
-                -- The default handler for each server
-                function(server_name)
-                    require("lspconfig")[server_name].setup({
-                        on_attach = on_attach,
-                        capabilities = capabilities,
-                    })
-                end,
+            require("mason-lspconfig").setup({
+                ensure_installed = {
+                    "bashls",
+                    "buf_ls",
+                    "clangd",
+                    "gopls",
+                    "marksman",
+                    "pyright",
+                    "rust_analyzer",
+                    "ts_ls",
+                },
 
-                -- For servers that need custom settings, we can override the default handler.
-                ["gopls"] = function()
-                    require("lspconfig").gopls.setup({
-                        on_attach = on_attach,
-                        capabilities = capabilities,
-                        settings = {
-                            gopls = {
-                                analyses = { unusedparams = true },
-                                staticcheck = true,
-                            },
-                        },
-                    })
-                end,
-                ["pyright"] = function()
-                    require("lspconfig").pyright.setup({
-                        on_attach = on_attach,
-                        capabilities = capabilities,
-                        settings = {
-                            python = {
-                                analysis = {
-                                    typeCheckingMode = "basic",
-                                    -- For virtual environments
-                                    autoSearchPaths = true,
-                                    useLibraryCodeForTypes = true,
+                -- The default handler for each server
+                handlers = {
+                    function(server_name)
+                        require("lspconfig")[server_name].setup({
+                            on_attach = on_attach,
+                            capabilities = capabilities,
+                        })
+                    end,
+
+                    -- For servers that need custom settings, we can override the default handler.
+                    ["gopls"] = function()
+                        require("lspconfig").gopls.setup({
+                            on_attach = on_attach,
+                            capabilities = capabilities,
+                            settings = {
+                                gopls = {
+                                    analyses = { unusedparams = true },
+                                    staticcheck = true,
                                 },
                             },
-                        },
-                    })
-                end,
+                        })
+                    end,
+                    ["pyright"] = function()
+                        require("lspconfig").pyright.setup({
+                            on_attach = on_attach,
+                            capabilities = capabilities,
+                            settings = {
+                                python = {
+                                    analysis = {
+                                        typeCheckingMode = "basic",
+                                        -- For virtual environments
+                                        autoSearchPaths = true,
+                                        useLibraryCodeForTypes = true,
+                                    },
+                                },
+                            },
+                        })
+                    end,
+                }
             })
         end,
     },
