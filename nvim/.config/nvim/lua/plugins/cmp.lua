@@ -31,7 +31,7 @@ return {
                     ["<C-f>"] = cmp.mapping.scroll_docs(4),
                     ["<C-Space>"] = cmp.mapping.complete(),
                     ["<C-e>"] = cmp.mapping.abort(),
-                    ["<CR>"] = cmp.mapping.confirm({ select = false }),
+                    ["<CR>"] = cmp.mapping.confirm({ select = true }),
                 }),
                 -- This defines the order of completion sources.
                 -- nvim-cmp will get suggestions from nvim_lsp and luasnip first,
