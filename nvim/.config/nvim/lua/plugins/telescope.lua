@@ -10,30 +10,27 @@ return {
     local builtin = require("telescope.builtin")
 
     telescope.setup({
-      defaults = {
-        vimgrep_arguments = {
-            "rg",
-            "--color=never",
-            "--no-heading",
-            "--with-filename",
-            "--line-number",
-            "--column",
-            "--smart-case",
-            "--hidden",
-        },
-        layout_config = {
-          width = 0.75,
-          prompt_position = "top",
-          preview_cutoff = 120,
-        },
-        sorting_strategy = "ascending",
-        file_ignore_patterns = { "node_modules", ".git/" },
-      },
-      pickers = {
-        find_files = {
-          hidden = true,
-        },
-      },
+          defaults = {
+            -- borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
+
+            vimgrep_arguments = {
+                "rg",
+                "--color=never",
+                "--no-heading",
+                "--with-filename",
+                "--line-number",
+                "--column",
+                "--smart-case",
+                "--hidden",
+            },
+            sorting_strategy = "ascending",
+            file_ignore_patterns = { "node_modules", ".git/" },
+          },
+          pickers = {
+            find_files = {
+                hidden = true,
+            },
+          },
     })
 
     pcall(telescope.load_extension, "fzf")

@@ -27,8 +27,8 @@ opt.ambiwidth = "double"   -- Handling ambiguous width characters
 
 -- Vertical Separator
 opt.fillchars = {
-    eob = " ",      -- No ~ at the end of the buffer
-    vert = "|",     -- Character to use for vertical splits
+    eob = " ",
+    vert = "|",
 }
 
 -- Text Wrapping
