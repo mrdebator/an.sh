@@ -24,19 +24,17 @@ return {
                 position = "right",
                 width = 40,
                 mappings = {
-                    ["b"] = function()
-                        require("neo-tree.command").execute({ toggle = true, source = "buffers" })
-                    end,
-                    ["g"] = function()
-                        require("neo-tree.command").execute({ toggle = true, source = "git_status" })
-                    end,
-                    ["s"] = function()
-                        require("neo-tree.command").execute({ toggle = true, source = "document_symbols" })
-                    end,
-                    ["f"] = function()
-                        require("neo-tree.command").execute({ toggle = true, source = "filesystem" })
-                    end,
-                }
+                  ["a"] = "add",            -- "a" to add a file or directory
+                  ["r"] = "rename",         -- "r" to rename
+                  ["d"] = "delete",         -- "d" to delete
+                  ["c"] = "copy_to_clipboard", -- "c" to copy the path
+                  ["x"] = "cut_to_clipboard",  -- "x" to cut
+                  ["p"] = "paste_from_clipboard", -- "p" to paste
+                  ["b"] = "toggle_source_buffers",
+                  ["g"] = "toggle_source_git_status",
+                  ["s"] = "toggle_source_document_symbols",
+                  ["f"] = "toggle_source_filesystem",
+                },
             },
             filesystem = {
                 use_libuv_file_watcher = true,
