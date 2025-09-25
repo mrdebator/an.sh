@@ -64,3 +64,23 @@ vim.keymap.set('n', '<leader>sd', function()
     require("core.dashboard").show_dashboard()
 end, { desc = "Security Dashboard" })
 
+-- :S command for project-wide substitution on the quickfix list.
+-- Usage: :S/find_this/replace_with_this/g
+vim.api.nvim_create_user_command(
+  "S",
+  function(opts)
+    -- Get the search/replace pattern from the command arguments
+    local pattern = table.concat(opts.fargs, " ")
+    if pattern == "" then
+      print("Error: No substitution pattern provided.")
+      return
+    end
+
+    -- Run the substitution on every item in the quickfix list
+    vim.cmd("cfdo %s/" .. pattern .. "| update")
+  end,
+  {
+    nargs = "*", -- This command takes any number of arguments
+    complete = "command",
+  }
+)

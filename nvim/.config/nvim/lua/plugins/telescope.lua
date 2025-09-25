@@ -8,11 +8,19 @@ return {
   config = function()
     local telescope = require("telescope")
     local builtin = require("telescope.builtin")
+    local actions = require("telescope.actions")
 
     telescope.setup({
           defaults = {
-            -- borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
-
+            mappings = {
+                i = {
+                    -- This is the magic action that sends all results to the quickfix list
+                    ["<C-q>"] = actions.smart_send_to_qflist + actions.open_qflist,
+                },
+                n = {
+                    ["<C-q>"] = actions.smart_send_to_qflist + actions.open_qflist,
+                },
+            },
             vimgrep_arguments = {
                 "rg",
                 "--color=never",
