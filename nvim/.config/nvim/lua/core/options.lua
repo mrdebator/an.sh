@@ -23,7 +23,7 @@ opt.background = "dark"  -- tell vim what the background color looks like
 opt.signcolumn = "yes"   -- always show the sign column
 opt.cursorline = true
 opt.colorcolumn = "120"    -- Show a vertical line at column 120 as a guide
-opt.ambiwidth = "double"   -- Handling ambiguous width characters
+-- opt.ambiwidth = "double"   -- Handling ambiguous width characters
 
 -- Vertical Separator
 opt.fillchars = {
