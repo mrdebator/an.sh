@@ -2,6 +2,7 @@
 -- We make it the highest priority to ensure it loads before anything else that needs it.
 
 
+--[=====[
 -- Catppuccin Mocha
 return {
   "catppuccin/nvim",
@@ -19,6 +20,7 @@ return {
     vim.cmd([[colorscheme catppuccin-mocha]])
   end,
 }
+--]=====]
 
 --[=====[
 -- Rose Pine
@@ -33,7 +35,6 @@ return {
 --]=====]
 
 -- Tokyo Night
---[=====[
 return {
     "folke/tokyonight.nvim",
     lazy = false,
@@ -53,4 +54,3 @@ return {
         vim.cmd([[colorscheme tokyonight]])
     end,
 }
---]=====]
