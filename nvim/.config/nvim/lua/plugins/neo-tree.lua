@@ -24,13 +24,7 @@ return {
                 position = "right",
                 width = 40,
                 mappings = {
-                  ["a"] = "add",            -- "a" to add a file or directory
-                  ["r"] = "rename",         -- "r" to rename
-                  ["d"] = "delete",         -- "d" to delete
-                  ["c"] = "copy_to_clipboard", -- "c" to copy the path
-                  ["x"] = "cut_to_clipboard",  -- "x" to cut
-                  ["p"] = "paste_from_clipboard", -- "p" to paste
-                  ["b"] = function()
+                    ["b"] = function()
                         require("neo-tree.command").execute({ toggle = true, source = "buffers" })
                     end,
                     ["g"] = function()
