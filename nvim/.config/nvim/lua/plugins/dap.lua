@@ -24,10 +24,10 @@ return {
 
     -- Shows variable values as virtual text in your buffer
     "theHamsta/nvim-dap-virtual-text",
-    
+
     -- This bridge automatically installs and configures debug adapters from Mason
     {
-        "jay-babu/mason-nvim-dap",
+        "jay-babu/mason-nvim-dap.nvim",
         dependencies = { "williamboman/mason.nvim" },
         -- This ensures the debug adapters are installed when you run :Mason
         opts = {
