@@ -1,7 +1,6 @@
 -- This file defines the theme.
 -- We make it the highest priority to ensure it loads before anything else that needs it.
 
-
 --[=====[
 -- Catppuccin Mocha
 return {
@@ -36,21 +35,21 @@ return {
 
 -- Tokyo Night
 return {
-    "folke/tokyonight.nvim",
-    lazy = false,
-    priority = 1000,
-    config = function()
-        require("tokyonight").setup({
-            style = "storm",
-            transparent = true,
-            terminal_colors = true,
-            styles = {
-                comments = { italic = true },
-                keywords = { italic = true },
-                sidebars = "dark",
-                floats = "dark",
-            },
-        })
-        vim.cmd([[colorscheme tokyonight]])
-    end,
+	"folke/tokyonight.nvim",
+	lazy = false,
+	priority = 1000,
+	config = function()
+		require("tokyonight").setup({
+			style = "storm",
+			transparent = true,
+			terminal_colors = true,
+			styles = {
+				comments = { italic = true },
+				keywords = { italic = true },
+				sidebars = "dark",
+				floats = "dark",
+			},
+		})
+		vim.cmd([[colorscheme tokyonight]])
+	end,
 }

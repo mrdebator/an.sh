@@ -22,14 +22,14 @@ map("x", "<leader>p", [["_dP]], opts)
 
 -- The familiar VS Code-style comment toggle
 map("n", "<leader>cc", function()
-    require("Comment.api").toggle.linewise.current()
+	require("Comment.api").toggle.linewise.current()
 end, { silent = true, desc = "Toggle comment (current line)" })
 
 map("v", "<leader>cc", function()
-    -- Pass the range of the visual selection to the api
-    local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
-    vim.api.nvim_feedkeys(esc, "nx", false)
-    require("Comment.api").toggle.linewise(vim.fn.visualmode())
+	-- Pass the range of the visual selection to the api
+	local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
+	vim.api.nvim_feedkeys(esc, "nx", false)
+	require("Comment.api").toggle.linewise(vim.fn.visualmode())
 end, { silent = true, desc = "Toggle comment (selection)" })
 
 -- WRAPPED LINE NAVIGATION --
@@ -68,7 +68,7 @@ map("n", "<leader>bd", ":bdelete<CR>", opts)
 
 -- Quick Quit Shortcuts
 map("n", "<leader>wq", ":wqa<CR>", { desc = "Save and quit all" })
-map("n", "<leader>qq", ":qa!<CR>", { desc = "Force quit all"})
+map("n", "<leader>qq", ":qa!<CR>", { desc = "Force quit all" })
 
 -- PLUGIN SHORTCUTS --
 
@@ -88,13 +88,25 @@ map("n", "<leader>gg", "<cmd>LazyGit<cr>", opts)
 -- =======================================================================
 -- DEBUGGER (DAP)
 -- =======================================================================
-map("n", "<leader>dc", function() require("dap").continue() end, { desc = "Debug: Continue" })
-map("n", "<leader>dj", function() require("dap").step_over() end, { desc = "Debug: Step Over (Next Line)" })
-map("n", "<leader>dk", function() require("dap").step_into() end, { desc = "Debug: Step Into (Function)" })
-map("n", "<leader>do", function() require("dap").step_out() end, { desc = "Debug: Step Out" })
-map("n", "<leader>db", function() require("dap").toggle_breakpoint() end, { desc = "Debug: Toggle Breakpoint" })
-map("n", "<leader>dr", function() require("dap").repl.open() end, { desc = "Debug: Open REPL" })
+map("n", "<leader>dc", function()
+	require("dap").continue()
+end, { desc = "Debug: Continue" })
+map("n", "<leader>dj", function()
+	require("dap").step_over()
+end, { desc = "Debug: Step Over (Next Line)" })
+map("n", "<leader>dk", function()
+	require("dap").step_into()
+end, { desc = "Debug: Step Into (Function)" })
+map("n", "<leader>do", function()
+	require("dap").step_out()
+end, { desc = "Debug: Step Out" })
+map("n", "<leader>db", function()
+	require("dap").toggle_breakpoint()
+end, { desc = "Debug: Toggle Breakpoint" })
+map("n", "<leader>dr", function()
+	require("dap").repl.open()
+end, { desc = "Debug: Open REPL" })
 map("n", "<leader>dl", function()
-  -- This is the keymap that opens your launch.json configurations
-  require("dap").run_last()
+	-- This is the keymap that opens your launch.json configurations
+	require("dap").run_last()
 end, { desc = "Debug: Launch Last" })
