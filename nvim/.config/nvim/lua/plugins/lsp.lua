@@ -9,7 +9,16 @@ return {
             {
                 "williamboman/mason.nvim",
                 config = function()
-                    require("mason").setup()
+                    require("mason").setup({
+                        ensure_installed = {
+                            -- Formatters
+                            "stylua",
+                            "black",
+                            "prettier",
+                            "shfmt",
+                            "goimports",
+                        },
+                    })
                 end,
             },
             "williamboman/mason-lspconfig.nvim",
@@ -29,7 +38,13 @@ return {
                 map("n", "<leader>d", vim.diagnostic.open_float, opts) -- Show line diagnostics
                 map("n", "[d", vim.diagnostic.goto_prev, opts)         -- Go to previous diagnostic
                 map("n", "]d", vim.diagnostic.goto_next, opts)         -- Go to next diagnostic
-                map("n", "<leader>f", vim.lsp.buf.format, opts)        -- Format
+                map("n", "<leader>F", function()                       -- Format file
+                    require("conform").format({
+                        lsp_fallback = true,
+                        async = false,
+                        timeout_ms = 500,
+                    })
+                end, { desc = "Format file" })
             end
 
             -- Capabilities are a way for the client (Neovim) to tell the server
