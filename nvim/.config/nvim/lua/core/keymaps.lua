@@ -20,6 +20,18 @@ map("v", "K", ":m '<-2<CR>gv=gv", opts)
 -- Better paste: paste without losing the text in the paste register
 map("x", "<leader>p", [["_dP]], opts)
 
+-- The familiar VS Code-style comment toggle
+map("n", "<leader>cc", function()
+    require("Comment.api").toggle.linewise.current()
+end, { silent = true, desc = "Toggle comment (current line)" })
+
+map("v", "<leader>cc", function()
+    -- Pass the range of the visual selection to the api
+    local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
+    vim.api.nvim_feedkeys(esc, "nx", false)
+    require("Comment.api").toggle.linewise(vim.fn.visualmode())
+end, { silent = true, desc = "Toggle comment (selection)" })
+
 -- WRAPPED LINE NAVIGATION --
 
 -- When text is wrapped, j and k move by display lines, not actual lines
@@ -52,7 +64,7 @@ map("n", "<C-l>", "<C-w>l", opts)
 -- Buffer management
 map("n", "<S-l>", ":bnext<CR>", opts)
 map("n", "<S-h>", ":bprevious<CR>", opts)
-map("n", "<leader>c", ":bdelete<CR>", opts)
+map("n", "<leader>bd", ":bdelete<CR>", opts)
 
 -- Quick Quit Shortcuts
 map("n", "<leader>wq", ":wqa<CR>", { desc = "Save and quit all" })
