@@ -70,18 +70,6 @@ map("n", "<leader>bd", ":bdelete<CR>", opts)
 map("n", "<leader>wq", ":wqa<CR>", { desc = "Save and quit all" })
 map("n", "<leader>qq", ":qa!<CR>", { desc = "Force quit all" })
 
--- PLUGIN SHORTCUTS --
-
--- File tree toggle
--- map("n", "<leader>e", ":NeoTree toggle<CR>", opts)
--- This definition has been moved to ../plugins/neo-tree.lua
-
--- Telescope fuzzy finding
-map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", opts)
-map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", opts)
-map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", opts)
-map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", opts)
-
 -- Lazygit toggle
 map("n", "<leader>gg", "<cmd>LazyGit<cr>", opts)
 
