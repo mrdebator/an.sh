@@ -10,7 +10,6 @@ return {
 	},
 	config = function()
 		local on_attach = function(client, bufnr)
-			local opts = { buffer = bufnr, remap = false }
 			local map = vim.keymap.set
 			map("n", "K", vim.lsp.buf.hover, opts) -- Show documentation for symbol under cursor
 			map("n", "gd", vim.lsp.buf.definition, opts) -- Go to definition
@@ -36,39 +35,63 @@ return {
 		-- them with the capabilities from nvim-cmp (for autocompletion).
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-		-- We can now safely get the list of installed servers.
-		local servers = require("mason-lspconfig").get_installed_servers()
-
-		for _, server_name in ipairs(servers) do
-			local server_config = {
-				on_attach = on_attach,
-				capabilities = capabilities,
-			}
-
-			-- Add your custom settings for gopls
-			if server_name == "gopls" then
-				server_config.settings = {
-					gopls = {
-						analyses = { unusedparams = true },
-						staticcheck = true,
-					},
-				}
-			end
-
-			-- Add your custom settings for pyright
-			if server_name == "pyright" then
-				server_config.settings = {
-					python = {
-						analysis = {
-							typeCheckingMode = "basic",
-							autoSearchPaths = true,
-							useLibraryCodeForTypes = true,
+		require("mason-lspconfig").setup({
+			-- A list of servers to automatically install.
+			ensure_installed = {
+				"bashls",
+				"buf_ls",
+				"clangd",
+				"gopls",
+				"marksman",
+				"pyright",
+				"rust_analyzer",
+				"ts_ls",
+			},
+			-- provide a single setup function that will be
+			-- automatically applied to every server unless overridden.
+			setup = {
+				-- The default setup function
+				default_setup = function(server_name, config)
+					config.on_attach = on_attach
+					config.capabilities = capabilities
+					require("lspconfig")[server_name].setup(config)
+				end,
+				-- Custom setup for gopls
+				gopls = function(_, config)
+					config.on_attach = on_attach
+					config.capabilities = capabilities
+					config.settings = {
+						gopls = {
+							analyses = {
+								unusedparams = true,
+							},
+							staticcheck = true,
 						},
-					},
-				}
-			end
+					}
+					require("lspconfig").gopls.setup(config)
+				end,
+				-- Custom setup for pyright
+				pyright = function(_, config)
+					config.on_attach = on_attach
+					config.capabilities = capabilities
+					config.settings = {
+						python = {
+							analysis = {
+								typeCheckingMode = "basic",
+								autoSearchPaths = true,
+								useLibraryCodeForTypes = true,
+							},
+						},
+					}
+					require("lspconfig").pyright.setup(config)
+				end,
+			},
+		})
 
-			require("lspconfig")[server_name].setup(server_config)
-		end
+		-- Custom Bazel setup
+		require("lspconfig").starlark_rust.setup({
+			on_attach = on_attach,
+			capabilities = capabilities,
+		})
 	end,
 }
