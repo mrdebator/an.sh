@@ -20,18 +20,6 @@ map("v", "K", ":m '<-2<CR>gv=gv", opts)
 -- Better paste: paste without losing the text in the paste register
 map("x", "<leader>p", [["_dP]], opts)
 
--- The familiar VS Code-style comment toggle
-map("n", "<leader>cc", function()
-	require("Comment.api").toggle.linewise.current()
-end, { silent = true, desc = "Toggle comment (current line)" })
-
-map("v", "<leader>cc", function()
-	-- Pass the range of the visual selection to the api
-	local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
-	vim.api.nvim_feedkeys(esc, "nx", false)
-	require("Comment.api").toggle.linewise(vim.fn.visualmode())
-end, { silent = true, desc = "Toggle comment (selection)" })
-
 -- WRAPPED LINE NAVIGATION --
 
 -- When text is wrapped, j and k move by display lines, not actual lines
