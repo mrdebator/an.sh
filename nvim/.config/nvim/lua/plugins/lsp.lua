@@ -35,63 +35,48 @@ return {
 		-- them with the capabilities from nvim-cmp (for autocompletion).
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-		require("mason-lspconfig").setup({
-			-- A list of servers to automatically install.
-			ensure_installed = {
-				"bashls",
-				"buf_ls",
-				"clangd",
-				"gopls",
-				"marksman",
-				"pyright",
-				"rust_analyzer",
-				"ts_ls",
+		local server_overrides = {
+			gopls = {
+				analyses = {
+					unusedparams = true,
+				},
+				staticcheck = true,
 			},
-			-- provide a single setup function that will be
-			-- automatically applied to every server unless overridden.
-			setup = {
-				-- The default setup function
-				default_setup = function(server_name, config)
-					config.on_attach = on_attach
-					config.capabilities = capabilities
-					require("lspconfig")[server_name].setup(config)
-				end,
-				-- Custom setup for gopls
-				gopls = function(_, config)
-					config.on_attach = on_attach
-					config.capabilities = capabilities
-					config.settings = {
-						gopls = {
-							analyses = {
-								unusedparams = true,
-							},
-							staticcheck = true,
-						},
-					}
-					require("lspconfig").gopls.setup(config)
-				end,
-				-- Custom setup for pyright
-				pyright = function(_, config)
-					config.on_attach = on_attach
-					config.capabilities = capabilities
-					config.settings = {
-						python = {
-							analysis = {
-								typeCheckingMode = "basic",
-								autoSearchPaths = true,
-								useLibraryCodeForTypes = true,
-							},
-						},
-					}
-					require("lspconfig").pyright.setup(config)
-				end,
+			python = {
+				analysis = {
+					typeCheckingMode = "basic",
+					autoSearchPaths = true,
+					useLibraryCodeForTypes = true,
+				},
 			},
-		})
+		}
 
-		-- Custom Bazel setup
-		require("lspconfig").starlark_rust.setup({
-			on_attach = on_attach,
+		local servers = require("mason-lspconfig").get_installed_servers()
+
+		for _, server_name in ipairs(servers) do
+			-- The base configuration that applies to all servers
+			local base_config = {
+				on_attach = on_attach,
+				capabilities = capabilities,
+			}
+
+			-- Get any custom settings for this specific server
+			local server_specific_config = server_overrides[server_name] or {}
+
+			-- Merge the base and specific config
+			local final_config = vim.tbl_deep_extend("force", base_config, server_specific_config)
+
+			-- Configure the server
+			vim.lsp.config(server_name, final_config)
+
+			-- Enable the server
+			vim.lsp.enable(server_name)
+		end
+
+		vim.lsp.config("starlark_rust", {
 			capabilities = capabilities,
+			on_attach = on_attach,
 		})
+		vim.lsp.enable("starlark_rust")
 	end,
 }
