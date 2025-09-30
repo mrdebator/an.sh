@@ -180,6 +180,7 @@ install_tool() {
 install_tool git
 install_tool curl
 install_tool wget
+install_tool alacritty
 
 # Development tools
 install_tool tmux
@@ -354,9 +355,11 @@ install_nerd_font
 #                 └── mrdebator.zsh-theme
 
 
-
-cd "$DOTFILES_DIR"
+BACKUP_DIR="$DOTFILES_DIR/backups/$(date +%Y%m%d_%H%M%S)"
+mkdir -p "$BACKUP_DIR"
+log_info "Backups for this run will be stored in: $BACKUP_DIR"
 log_info "Preparing to stow dotfiles from $DOTFILES_DIR"
+cd "$DOTFILES_DIR"
 
 # Automatically find and stow all packages
 # This loop will find any directory that is a valid stow package (i.e., not 'backups' or hidden).
@@ -373,14 +376,17 @@ stow_packages() {
         # Before stowing, we need to handle potential conflicts
         log_info "Preparing to stow '$package'..."
         # This is a bit complex: it finds all files within the package dir and checks for conflicts in the home dir
-        find "$package" -type f -print0 | while IFS= read -r -d $'\0' file; do
-            target_file="$HOME/${file#"$package/"}"
-            backup_if_exists "$target_file"
+        find "$package" -mindepth 1 -maxdepth 1 -print0 | while IFS= read -r -d $'\0' item; do
+            target="$HOME/$(basename "$item")"
+            if [[ -e "$target" ]] && [[ ! -L "$target" ]]; then
+                log_warning "Found existing config at '$target'. Backing it up."
+                mv "$target" "$BACKUP_DIR/"
+            fi
         done
 
         # Now, safely stow the package
-        log_info "Stowing '$package'..."
         stow --restow --target="$HOME" "$package"
+        log_success "successfully stowed '$package'"
     done
 }
 
