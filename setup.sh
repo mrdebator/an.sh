@@ -254,34 +254,6 @@ case "$PACKAGE_MANAGER" in
         ;;
 esac
 
-# ------ Install Oh My Zsh ------
-
-if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-    log_info "Installing Oh My Zsh..."
-    RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
-else
-    log_success "Oh My Zsh is already installed"
-fi
-
-# Install Zsh plugins
-ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
-
-install_zsh_plugin() {
-    local repo=$1
-    local name=$2
-
-    if [[ ! -d "$ZSH_CUSTOM/plugins/$name" ]]; then
-        log_info "Installing $name..."
-        git clone "$repo" "$ZSH_CUSTOM/plugins/$name"
-    else
-        log_success "$name is already installed"
-    fi
-}
-
-install_zsh_plugin "https://github.com/zsh-users/zsh-autosuggestions" "zsh-autosuggestions"
-install_zsh_plugin "https://github.com/zsh-users/zsh-completions" "zsh-completions"
-install_zsh_plugin "https://github.com/zsh-users/zsh-syntax-highlighting" "zsh-syntax-highlighting"
-
 # ------ Install Fonts ------
 
 install_nerd_font() {
@@ -411,6 +383,35 @@ stow_packages() {
 
 stow_packages
 log_success "All packages have been stowed successfully!"
+
+# ------ Install Oh My Zsh ------
+
+if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+    log_info "Installing Oh My Zsh..."
+    KEEP_ZSHRC="yes" RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || true
+else
+    log_success "Oh My Zsh is already installed"
+fi
+
+# Install Zsh plugins
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+install_zsh_plugin() {
+    local repo=$1
+    local name=$2
+
+    if [[ ! -d "$ZSH_CUSTOM/plugins/$name" ]]; then
+        log_info "Installing $name..."
+        git clone "$repo" "$ZSH_CUSTOM/plugins/$name"
+    else
+        log_success "$name is already installed"
+    fi
+}
+
+install_zsh_plugin "https://github.com/zsh-users/zsh-autosuggestions" "zsh-autosuggestions"
+install_zsh_plugin "https://github.com/zsh-users/zsh-completions" "zsh-completions"
+install_zsh_plugin "https://github.com/zsh-users/zsh-syntax-highlighting" "zsh-syntax-highlighting"
+
 
 # ------ Post-Installation Setup ------
 
