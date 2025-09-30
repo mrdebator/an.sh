@@ -258,7 +258,7 @@ esac
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
     log_info "Installing Oh My Zsh..."
-    RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || true
+    KEEP_ZSHRC="yes" RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || true
 else
     log_success "Oh My Zsh is already installed"
 fi
