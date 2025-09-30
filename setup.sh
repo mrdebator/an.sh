@@ -354,59 +354,59 @@ install_nerd_font
 #             └── themes/
 #                 └── mrdebator.zsh-theme
 
+cd "$DOTFILES_DIR"
 
 BACKUP_DIR="$DOTFILES_DIR/backups/$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 log_info "Backups for this run will be stored in: $BACKUP_DIR"
 log_info "Preparing to stow dotfiles from $DOTFILES_DIR"
-cd "$DOTFILES_DIR"
 
 # Automatically find and stow all packages
 # This loop will find any directory that is a valid stow package (i.e., not 'backups' or hidden).
 stow_packages() {
-    for package_dir in */; do
-        # Remove trailing slash to get the package name
-        local package=${package_dir%/}
+  for package_dir in */; do
+    local package=${package_dir%/}
 
-        # Skip directories that are not stow packages
-        if [[ "$package" == "backups" || "$package" == "themes" || "$package" == "system" || "$package" == "tools" || "$package" == "archive" ]]; then
-            continue
-        fi
+    # Skip non-package directories
+    if [[ "$package" == "backups" || "$package" == "themes" || "$package" == "system" || "$package" == "tools" || "$package" == "archive" ]]; then
+      continue
+    fi
 
-        # Before stowing, we need to handle potential conflicts
-        log_info "Preparing to stow '$package'..."
-        # For each item in the package's root (e.g., .config, .zshrc)...
-        for item in "$DOTFILES_DIR/$package"/*; do
-          local item_name
-          item_name=$(basename "$item")
-          local target_path="$HOME/$item_name"
+    log_info "Processing package: '$package'"
 
-          # If the item is a directory (like .config)...
-          if [ -d "$item" ]; then
-            # ...then we must check for conflicts on its children.
-            for sub_item in "$item"/*; do
-              local sub_item_name
-              sub_item_name=$(basename "$sub_item")
-              local sub_target_path="$target_path/$sub_item_name" # e.g., ~/.config/nvim
+    # For each item AT THE TOP LEVEL of the package (e.g., .config, .zshrc)...
+    for item in "$DOTFILES_DIR/$package"/*; do
+      local item_name
+      item_name=$(basename "$item")
+      local target_path="$HOME/$item_name"
 
-              if [ -e "$sub_target_path" ] && [ ! -L "$sub_target_path" ]; then
-                log_warning "Found existing config at '$sub_target_path'. Backing it up."
-                mv "$sub_target_path" "$BACKUP_DIR/"
-              fi
-            done
-          else
-            # ...otherwise it's a file (like .zshrc), so check it directly.
-            if [ -e "$target_path" ] && [ ! -L "$target_path" ]; then
-              log_warning "Found existing config at '$target_path'. Backing it up."
-              mv "$target_path" "$BACKUP_DIR/"
-            fi
+      # If the item in our package is a directory (like '.config')...
+      if [ -d "$item" ]; then
+        # ...then we must check for conflicts on its CHILDREN.
+        # This is the surgical fix. We check for ~/.config/nvim, not ~/.config.
+        for sub_item in "$item"/*; do
+          local sub_item_name
+          sub_item_name=$(basename "$sub_item")
+          local sub_target_path="$target_path/$sub_item_name" # e.g., ~/.config/nvim
+
+          if [ -e "$sub_target_path" ] && [ ! -L "$sub_target_path" ]; then
+            log_warning "Found existing config at '$sub_target_path'. Backing it up."
+            mv "$sub_target_path" "$BACKUP_DIR/"
           fi
         done
-
-        # Now, safely stow the package
-        stow --restow --target="$HOME" "$package"
-        log_success "successfully stowed '$package'"
+      else
+        # ...otherwise it's a file (like .zshrc), so check it directly.
+        if [ -e "$target_path" ] && [ ! -L "$target_path" ]; then
+          log_warning "Found existing config at '$target_path'. Backing it up."
+          mv "$target_path" "$BACKUP_DIR/"
+        fi
+      fi
     done
+
+    # Now that potential conflicts are safely backed up, stow the package.
+    stow --restow --target="$HOME" "$package"
+    log_success "Successfully stowed '$package'"
+  done
 }
 
 stow_packages
