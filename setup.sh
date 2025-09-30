@@ -375,13 +375,32 @@ stow_packages() {
 
         # Before stowing, we need to handle potential conflicts
         log_info "Preparing to stow '$package'..."
-        # This is a bit complex: it finds all files within the package dir and checks for conflicts in the home dir
-        find "$package" -mindepth 1 -maxdepth 1 -print0 | while IFS= read -r -d $'\0' item; do
-            target="$HOME/$(basename "$item")"
-            if [[ -e "$target" ]] && [[ ! -L "$target" ]]; then
-                log_warning "Found existing config at '$target'. Backing it up."
-                mv "$target" "$BACKUP_DIR/"
+        # For each item in the package's root (e.g., .config, .zshrc)...
+        for item in "$DOTFILES_DIR/$package"/*; do
+          local item_name
+          item_name=$(basename "$item")
+          local target_path="$HOME/$item_name"
+
+          # If the item is a directory (like .config)...
+          if [ -d "$item" ]; then
+            # ...then we must check for conflicts on its children.
+            for sub_item in "$item"/*; do
+              local sub_item_name
+              sub_item_name=$(basename "$sub_item")
+              local sub_target_path="$target_path/$sub_item_name" # e.g., ~/.config/nvim
+
+              if [ -e "$sub_target_path" ] && [ ! -L "$sub_target_path" ]; then
+                log_warning "Found existing config at '$sub_target_path'. Backing it up."
+                mv "$sub_target_path" "$BACKUP_DIR/"
+              fi
+            done
+          else
+            # ...otherwise it's a file (like .zshrc), so check it directly.
+            if [ -e "$target_path" ] && [ ! -L "$target_path" ]; then
+              log_warning "Found existing config at '$target_path'. Backing it up."
+              mv "$target_path" "$BACKUP_DIR/"
             fi
+          fi
         done
 
         # Now, safely stow the package
