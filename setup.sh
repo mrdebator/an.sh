@@ -254,6 +254,34 @@ case "$PACKAGE_MANAGER" in
         ;;
 esac
 
+# ------ Install Oh My Zsh ------
+
+if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+    log_info "Installing Oh My Zsh..."
+    RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || true
+else
+    log_success "Oh My Zsh is already installed"
+fi
+
+# Install Zsh plugins
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+install_zsh_plugin() {
+    local repo=$1
+    local name=$2
+
+    if [[ ! -d "$ZSH_CUSTOM/plugins/$name" ]]; then
+        log_info "Installing $name..."
+        git clone "$repo" "$ZSH_CUSTOM/plugins/$name"
+    else
+        log_success "$name is already installed"
+    fi
+}
+
+install_zsh_plugin "https://github.com/zsh-users/zsh-autosuggestions" "zsh-autosuggestions"
+install_zsh_plugin "https://github.com/zsh-users/zsh-completions" "zsh-completions"
+install_zsh_plugin "https://github.com/zsh-users/zsh-syntax-highlighting" "zsh-syntax-highlighting"
+
 # ------ Install Fonts ------
 
 install_nerd_font() {
@@ -340,7 +368,7 @@ stow_packages() {
     local package=${package_dir%/}
 
     # Skip non-package directories
-    if [[ "$package" == "backups" || "$package" == "themes" || "$package" == "system" || "$package" == "tools" || "$package" == "archive" ]]; then
+    if [[ "$package" == "backups" || "$package" == "themes" || "$package" == "system" || "$package" == "tools" || "$package" == "archive" || "$package" == "oh-my-zsh" ]]; then
       continue
     fi
 
@@ -382,36 +410,16 @@ stow_packages() {
 }
 
 stow_packages
-log_success "All packages have been stowed successfully!"
 
-# ------ Install Oh My Zsh ------
-
-if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-    log_info "Installing Oh My Zsh..."
-    RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || true
-else
-    log_success "Oh My Zsh is already installed"
+# A special, surgical stow for the oh-my-zsh customizations.
+if [[ -d "oh-my-zsh" ]]; then
+    log_info "Stowing Oh My Zsh customizations..."
+    # We are stowing the 'oh-my-zsh' package INTO the target ~/.oh-my-zsh directory.
+    stow --restow --target="$HOME/.oh-my-zsh" "oh-my-zsh"
+    log_success "Successfully stowed Oh My Zsh customizations"
 fi
 
-# Install Zsh plugins
-ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
-
-install_zsh_plugin() {
-    local repo=$1
-    local name=$2
-
-    if [[ ! -d "$ZSH_CUSTOM/plugins/$name" ]]; then
-        log_info "Installing $name..."
-        git clone "$repo" "$ZSH_CUSTOM/plugins/$name"
-    else
-        log_success "$name is already installed"
-    fi
-}
-
-install_zsh_plugin "https://github.com/zsh-users/zsh-autosuggestions" "zsh-autosuggestions"
-install_zsh_plugin "https://github.com/zsh-users/zsh-completions" "zsh-completions"
-install_zsh_plugin "https://github.com/zsh-users/zsh-syntax-highlighting" "zsh-syntax-highlighting"
-
+log_success "All packages have been stowed successfully!"
 
 # ------ Post-Installation Setup ------
 
