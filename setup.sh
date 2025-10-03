@@ -439,6 +439,12 @@ if [[ "$SHELL" != "$(which zsh)" ]]; then
     chsh -s "$(which zsh)" || log_warning "Failed to set Zsh as default shell"
 fi
 
+# Add alias for `bat`.
+batPath=$(command -v bat || command -v batcat)
+if [ -n "$batPath" ]; then
+    echo "alias cat=$batPath" >>"$HOME/.zshrc"
+fi
+
 # ------ Success Message ------
 
 echo ""
