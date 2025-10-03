@@ -4,7 +4,7 @@
 #  Dotfiles Setup Script with GNU Stow
 # ================================================================
 
-set -euo pipefail  # Exit on error, undefined variable, or pipe failure
+set -euo pipefail # Exit on error, undefined variable, or pipe failure
 
 # ------ Color Output Functions ------
 
@@ -35,9 +35,9 @@ log_error() {
 
 check_os() {
     case "$(uname -s)" in
-        Linux*)     echo "Linux";;
-        Darwin*)    echo "Darwin";;
-        *)          log_error "Unsupported OS: $(uname -s)";;
+    Linux*) echo "Linux" ;;
+    Darwin*) echo "Darwin" ;;
+    *) log_error "Unsupported OS: $(uname -s)" ;;
     esac
 }
 
@@ -48,13 +48,13 @@ function get_script_dir() {
     # Use a loop to handle the case where the script may be a symlink.
     while [[ -L "$SOURCE" ]]; do
         # Use a subshell and `dirname` to resolve the directory containing the symlink.
-        DIR="$( cd -P "$( dirname "$SOURCE" )" &> /dev/null && pwd )"
+        DIR="$(cd -P "$(dirname "$SOURCE")" &>/dev/null && pwd)"
         # Resolve symlink using `readlink`.
         SOURCE="$(readlink "$SOURCE")"
         # Handle relative symlinks.
         [[ "$SOURCE" != /* ]] && SOURCE="$DIR/$SOURCE"
     done
-    DIR="$( cd -P "$( dirname "$SOURCE" )" &> /dev/null && pwd )"
+    DIR="$(cd -P "$(dirname "$SOURCE")" &>/dev/null && pwd)"
     echo "$DIR"
 }
 
@@ -94,21 +94,21 @@ log_info "Dotfiles Directory: $DOTFILES_DIR"
 if ! command -v stow &>/dev/null; then
     log_warning "GNU Stow is not installed. Installing..."
     case "$PACKAGE_MANAGER" in
-        brew)
-            brew install stow
-            ;;
-        apt)
-            sudo apt update && sudo apt install -y stow
-            ;;
-        pacman)
-            sudo pacman -Sy --noconfirm stow
-            ;;
-        dnf|yum)
-            sudo $PACKAGE_MANAGER install -y stow
-            ;;
-        *)
-            log_error "Cannot install stow with $PACKAGE_MANAGER"
-            ;;
+    brew)
+        brew install stow
+        ;;
+    apt)
+        sudo apt update && sudo apt install -y stow
+        ;;
+    pacman)
+        sudo pacman -Sy --noconfirm stow
+        ;;
+    dnf | yum)
+        sudo $PACKAGE_MANAGER install -y stow
+        ;;
+    *)
+        log_error "Cannot install stow with $PACKAGE_MANAGER"
+        ;;
     esac
     if ! command -v stow &>/dev/null; then
         log_error "Failed to install GNU Stow. Aborting setup."
@@ -124,13 +124,13 @@ mkdir -p "$BACKUP_DIR"
 log_info "Backup directory created at: $BACKUP_DIR"
 
 backup_if_exists() {
-  local target="$1"
-  # Check if the target exists and is not already a symlink
-  if [[ -e "$target" ]] && [[ ! -L "$target" ]]; then
-    log_info "Backing up '$target' to '$BACKUP_DIR'"
-    # Move the original file/directory to the backup location
-    mv "$target" "$BACKUP_DIR/"
-  fi
+    local target="$1"
+    # Check if the target exists and is not already a symlink
+    if [[ -e "$target" ]] && [[ ! -L "$target" ]]; then
+        log_info "Backing up '$target' to '$BACKUP_DIR'"
+        # Move the original file/directory to the backup location
+        mv "$target" "$BACKUP_DIR/"
+    fi
 }
 
 # Backup existing configs that aren't symlinks
@@ -148,28 +148,27 @@ for config in "${configs[@]}"; do
     backup_if_exists "$config"
 done
 
-
 # ------ Install Required Tools ------
 
 install_tool() {
     local tool=$1
-    local package=${2:-$tool}  # Use second argument if provided, otherwise use tool name
+    local package=${2:-$tool} # Use second argument if provided, otherwise use tool name
 
     if ! command -v "$tool" &>/dev/null; then
         log_info "Installing $tool..."
         case "$PACKAGE_MANAGER" in
-            brew)
-                brew install "$package"
-                ;;
-            apt)
-                sudo apt install -y "$package"
-                ;;
-            pacman)
-                sudo pacman -S --noconfirm "$package"
-                ;;
-            dnf|yum)
-                sudo $PACKAGE_MANAGER install -y "$package"
-                ;;
+        brew)
+            brew install "$package"
+            ;;
+        apt)
+            sudo apt install -y "$package"
+            ;;
+        pacman)
+            sudo pacman -S --noconfirm "$package"
+            ;;
+        dnf | yum)
+            sudo $PACKAGE_MANAGER install -y "$package"
+            ;;
         esac
     else
         log_success "$tool is already installed"
@@ -198,20 +197,20 @@ install_tool go golang
 if ! command -v fd &>/dev/null; then
     log_info "Installing fd..."
     case "$PACKAGE_MANAGER" in
-        brew)
-            brew install fd
-            ;;
-        apt)
-            sudo apt install -y fd-find
-            # Create symlink for consistency
-            sudo ln -sf "$(which fdfind)" /usr/local/bin/fd 2>/dev/null || true
-            ;;
-        pacman)
-            sudo pacman -S --noconfirm fd
-            ;;
-        dnf|yum)
-            sudo $PACKAGE_MANAGER install -y fd-find
-            ;;
+    brew)
+        brew install fd
+        ;;
+    apt)
+        sudo apt install -y fd-find
+        # Create symlink for consistency
+        sudo ln -sf "$(which fdfind)" /usr/local/bin/fd 2>/dev/null || true
+        ;;
+    pacman)
+        sudo pacman -S --noconfirm fd
+        ;;
+    dnf | yum)
+        sudo $PACKAGE_MANAGER install -y fd-find
+        ;;
     esac
 fi
 
@@ -222,36 +221,36 @@ fi
 
 if ! command -v pip3 &>/dev/null; then
     case "$PACKAGE_MANAGER" in
-        brew)
-            # pip comes with python3 on brew
-            ;;
-        apt)
-            sudo apt install -y python3-pip
-            ;;
-        pacman)
-            sudo pacman -S --noconfirm python-pip
-            ;;
-        dnf|yum)
-            sudo $PACKAGE_MANAGER install -y python3-pip
-            ;;
+    brew)
+        # pip comes with python3 on brew
+        ;;
+    apt)
+        sudo apt install -y python3-pip
+        ;;
+    pacman)
+        sudo pacman -S --noconfirm python-pip
+        ;;
+    dnf | yum)
+        sudo $PACKAGE_MANAGER install -y python3-pip
+        ;;
     esac
 fi
 
 # Install build tools for treesitter
 log_info "Installing build tools..."
 case "$PACKAGE_MANAGER" in
-    brew)
-        # Xcode command line tools should already be installed
-        ;;
-    apt)
-        sudo apt install -y build-essential
-        ;;
-    pacman)
-        sudo pacman -S --noconfirm base-devel
-        ;;
-    dnf|yum)
-        sudo $PACKAGE_MANAGER groupinstall -y "Development Tools"
-        ;;
+brew)
+    # Xcode command line tools should already be installed
+    ;;
+apt)
+    sudo apt install -y build-essential
+    ;;
+pacman)
+    sudo pacman -S --noconfirm base-devel
+    ;;
+dnf | yum)
+    sudo $PACKAGE_MANAGER groupinstall -y "Development Tools"
+    ;;
 esac
 
 # ------ Install Oh My Zsh ------
@@ -306,6 +305,17 @@ install_nerd_font() {
 }
 
 install_nerd_font
+
+# ------ Install Tmux Theme Manually ------
+TMUX_THEME_DIR="$HOME/.config/tmux/plugins/catppuccin"
+if [[ ! -d "$TMUX_THEME_DIR" ]]; then
+    log_info "Installing Catppuccin theme for Tmux..."
+    # We create the parent directory first
+    mkdir -p "$(dirname "$TMUX_THEME_DIR")"
+    git clone -b v2.1.3 https://github.com/catppuccin/tmux.git "$TMUX_THEME_DIR/tmux"
+else
+    log_success "Catppuccin theme for Tmux is already installed"
+fi
 
 # ------ Stow Dotfiles ------
 
@@ -364,49 +374,49 @@ log_info "Preparing to stow dotfiles from $DOTFILES_DIR"
 # Automatically find and stow all packages
 # This loop will find any directory that is a valid stow package (i.e., not 'backups' or hidden).
 stow_packages() {
-  for package_dir in */; do
-    local package=${package_dir%/}
+    for package_dir in */; do
+        local package=${package_dir%/}
 
-    # Skip non-package directories
-    if [[ "$package" == "backups" || "$package" == "themes" || "$package" == "system" || "$package" == "tools" || "$package" == "archive" || "$package" == "oh-my-zsh" ]]; then
-      continue
-    fi
-
-    log_info "Processing package: '$package'"
-
-    # For each item AT THE TOP LEVEL of the package (e.g., .config, .zshrc)...
-    for item in "$DOTFILES_DIR/$package"/*; do
-      local item_name
-      item_name=$(basename "$item")
-      local target_path="$HOME/$item_name"
-
-      # If the item in our package is a directory (like '.config')...
-      if [ -d "$item" ]; then
-        # ...then we must check for conflicts on its CHILDREN.
-        # This is the surgical fix. We check for ~/.config/nvim, not ~/.config.
-        for sub_item in "$item"/*; do
-          local sub_item_name
-          sub_item_name=$(basename "$sub_item")
-          local sub_target_path="$target_path/$sub_item_name" # e.g., ~/.config/nvim
-
-          if [ -e "$sub_target_path" ] && [ ! -L "$sub_target_path" ]; then
-            log_warning "Found existing config at '$sub_target_path'. Backing it up."
-            mv "$sub_target_path" "$BACKUP_DIR/"
-          fi
-        done
-      else
-        # ...otherwise it's a file (like .zshrc), so check it directly.
-        if [ -e "$target_path" ] && [ ! -L "$target_path" ]; then
-          log_warning "Found existing config at '$target_path'. Backing it up."
-          mv "$target_path" "$BACKUP_DIR/"
+        # Skip non-package directories
+        if [[ "$package" == "backups" || "$package" == "themes" || "$package" == "system" || "$package" == "tools" || "$package" == "archive" || "$package" == "oh-my-zsh" ]]; then
+            continue
         fi
-      fi
-    done
 
-    # Now that potential conflicts are safely backed up, stow the package.
-    stow --restow --target="$HOME" "$package"
-    log_success "Successfully stowed '$package'"
-  done
+        log_info "Processing package: '$package'"
+
+        # For each item AT THE TOP LEVEL of the package (e.g., .config, .zshrc)...
+        for item in "$DOTFILES_DIR/$package"/*; do
+            local item_name
+            item_name=$(basename "$item")
+            local target_path="$HOME/$item_name"
+
+            # If the item in our package is a directory (like '.config')...
+            if [ -d "$item" ]; then
+                # ...then we must check for conflicts on its CHILDREN.
+                # This is the surgical fix. We check for ~/.config/nvim, not ~/.config.
+                for sub_item in "$item"/*; do
+                    local sub_item_name
+                    sub_item_name=$(basename "$sub_item")
+                    local sub_target_path="$target_path/$sub_item_name" # e.g., ~/.config/nvim
+
+                    if [ -e "$sub_target_path" ] && [ ! -L "$sub_target_path" ]; then
+                        log_warning "Found existing config at '$sub_target_path'. Backing it up."
+                        mv "$sub_target_path" "$BACKUP_DIR/"
+                    fi
+                done
+            else
+                # ...otherwise it's a file (like .zshrc), so check it directly.
+                if [ -e "$target_path" ] && [ ! -L "$target_path" ]; then
+                    log_warning "Found existing config at '$target_path'. Backing it up."
+                    mv "$target_path" "$BACKUP_DIR/"
+                fi
+            fi
+        done
+
+        # Now that potential conflicts are safely backed up, stow the package.
+        stow --restow --target="$HOME" "$package"
+        log_success "Successfully stowed '$package'"
+    done
 }
 
 stow_packages
