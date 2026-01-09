@@ -248,9 +248,6 @@ apt)
 pacman)
     sudo pacman -S --noconfirm base-devel
     ;;
-dnf | yum)
-    sudo $PACKAGE_MANAGER groupinstall -y "Development Tools"
-    ;;
 esac
 
 # ------ Install Oh My Zsh ------
