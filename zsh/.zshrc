@@ -3,6 +3,12 @@ export ZSH="$HOME/.oh-my-zsh"
 # Path to FZF installation.
 export FZF_BASE="$ZSH/plugins/fzf"
 
+# Default Editor
+export VISUAL=vim
+export EDITOR="$VISUAL"
+
+export PATH="$HOME/.local/bin:$PATH"
+
 # Set theme.
 ZSH_THEME="mrdebator"
 
@@ -22,8 +28,8 @@ source $ZSH/oh-my-zsh.sh
 HISTSIZE=5000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
-HISTDUP=erase
 HIST_STAMPS="yyyy-mm-dd"
+
 setopt appendhistory
 setopt sharehistory
 setopt hist_ignore_space
@@ -38,6 +44,13 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 # Shell Integrations
-source <(fzf --zsh)
+if command -v fzf &>/dev/null; then
+    source <(fzf --zsh)
+fi
 
 # Aliases
+if command -v bat &>/dev/null; then
+    alias cat="$(command -v bat)"
+elif command -v batcat &>/dev/null; then
+    alias cat="$(command -v batcat)"
+fi
