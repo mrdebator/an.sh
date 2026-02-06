@@ -38,6 +38,7 @@ APPS_COMMON=(
 # Installed ONLY on Personal machines
 APPS_PERSONAL=(
     "obsidian"
+    "ticktick"
     "qflipper"
     "docker"
     "chrome"

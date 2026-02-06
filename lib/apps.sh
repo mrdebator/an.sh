@@ -158,6 +158,113 @@ EOF
     fi
 }
 
+task_ticktick() {
+    # macOS: Simple Cask Install
+    if [[ "$(get_os)" == "Darwin" ]]; then
+        # macOS: Use Homebrew Cask
+        # We check simply by seeing if the app exists in /Applications
+        if [[ ! -d "/Applications/TickTick.app" ]]; then
+            log_info "Installing TickTick (Cask)..."
+            brew install --cask ticktick
+        else
+            log_success "TickTick is already installed."
+        fi
+        return
+    fi
+
+    # Linux: AppImage "Smart" Install
+    local app_name="TickTick"
+    local app_dir="$HOME/Applications/$app_name"
+    local bin_dir="$HOME/.local/bin"
+    local version_file="$app_dir/version.txt"
+
+    local arch="x64"
+    if [[ "$(uname -m)" == "arm64" ]]; then
+        arch="arm64"
+    fi
+
+    local static_url="https://ticktick.com/static/getApp/download?type=linux_appimage_$arch"
+
+    mkdir -p "$app_dir" "$bin_dir"
+
+    log_info "Checking latest version for $app_name..."
+
+    # Resolve the redirect URL to find the Version
+    # Use cURL to follow redirects (-L) but discard the body (-o /dev/null)
+    # and print only the final effective URL (-w %{url_effective})
+    local final_url
+    final_url=$(curl -Ls -o /dev/null -w %{url_effective} "$static_url")
+
+    # Example URL: https://.../ticktick-8.0.0-x86_64.AppImage
+    # Strip the prefix and suffice to get "8.0.0"
+    local latest_version
+    latest_version=$(echo "$final_url" | sed -E 's/.*ticktick-([0-9.]+)-x86_64.*/\1/')
+
+    if [[ -z "$latest_version" ]]; then
+        log_error "Could not detect TickTick version from URL. Skipping."
+        return
+    fi
+
+    # Check if we already have this version
+    local current_version="Not Installed"
+    if [[ -f "$version_file" ]]; then
+        current_version=$(cat "$version_file")
+    fi
+
+    if [[ "$current_version" == "$latest_version" ]]; then
+        log_success "$app_name is already up to date ($latest_version)"
+        return
+    fi
+
+    # Download and install
+    log_info "$app_name ($current_version -> $latest_version)..."
+
+    # Clean up old AppImages
+    rm -f "$app_dir"*.AppImage
+
+    local filename="ticktick-$latest_version.AppImage"
+
+    # Download from the resolved URL
+    wget -q --show-progress -O "$app_dir/$filename" "$final_url"
+    chmod +x "$app_dir/$filename"
+
+    # Extract for stability (recommended for FUSE-less systems)
+    cd "$app_dir"
+    ./"$filename" --appimage-extract >/dev/null
+    rm -rf binary
+    mv squashfs-root binary
+    rm "$filename"
+
+    # Link binary to path
+    ln -sf "$app_dir/binary/AppRun" "$bin_dir/ticktick"
+
+    # Create desktop entry
+    local desktop_file="$HOME/.local/share/applications/ticktick.desktop"
+
+    log_info "Updating desktop entry..."
+    mkdir -p "$(dirname "$desktop_file")"
+
+    # Grab a high-res icon (TickTick doesn't have a clean SVG url)
+    wget -q -O "$app_dir/icon.png" "https://upload.wikimedia.org/wikipedia/commons/6/68/Font_Awesome_5_solid_tasks.svg"
+
+    cat <<EOF > "$desktop_file"
+[Desktop Entry]
+Name=TickTick
+Exec=$bin_dir/ticktick
+Icon=$app_dir/icon.png
+Type=Application
+Categories=Office;
+Terminal=false
+StartupWMClass=ticktick
+EOF
+
+    update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
+
+    # Save Version
+    echo "$latest_version" > "$version_file"
+    log_success "$app_name updated to $latest_version"
+}
+
 task_chrome() {
     if [[ "$(get_os)" == "Darwin" ]]; then
         # macOS: Use Homebrew Cask
