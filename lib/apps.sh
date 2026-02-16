@@ -98,6 +98,55 @@ install_github_appimage() {
 #  Tasks: Core Tools (Wrappers)
 # ------------------------------------------------------------------------------
 
+install_zsh_plugin() {
+    local repo=$1
+    local name=$2
+    local target_dir="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/$name"
+
+    if [[ ! -d "$target_dir" ]]; then
+        log_info "Installing zsh plugin: $name..."
+        # Clone quietly, depth 1 for speed
+        git clone -q --depth=1 "$repo" "$target_dir"
+    else
+        log_info "Updating zsh plugin: $name..."
+        # If the directory exists but isn't a valid git repo (interrupted clone), this catches it
+        if [[ ! -d "$target_dir/.git" ]]; then
+            log_warning "Corrupt plugin found at $target_dir. Reinstalling..."
+            rm -r "$target_dir"
+            git clone -q --depth=1 "$repo" "$target_dir"
+        else
+            # Gracefully pull updates. --ff-only prevents accidental merge commits if you modified files
+            git -C "$target_dir" pull -q --ff-only || log_warning "Could not update $name (local changes?)"
+        fi
+    fi
+}
+
+task_zsh() {
+    # 1. Install core zsh package
+    sys_install "zsh"
+
+    # 2. Install Oh My Zsh (Unattended)
+    if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+        log_info "Installing Oh My Zsh..."
+        KEEP_ZSHRC="yes" RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || true
+    else
+        log_success "Oh My Zsh is already installed"
+    fi
+
+    # 3. Install & Update Plugins
+    install_zsh_plugin "https://github.com/zsh-users/zsh-autosuggestions" "zsh-autosuggestions"
+    install_zsh_plugin "https://github.com/zsh-users/zsh-completions" "zsh-completions"
+    install_zsh_plugin "https://github.com/zsh-users/zsh-syntax-highlighting" "zsh-syntax-highlighting"
+    # Fast Git prompt daemon (Crucial for the new mrdebator theme)
+    install_zsh_plugin "https://github.com/romkatv/gitstatus.git" "gitstatus"
+
+    # 4. Set default shell
+    if [[ "$SHELL" != "$(which zsh)" ]] && command -v zsh &>/dev/null; then
+        log_info "Setting zsh as default shell..."
+        sudo chsh -s "$(which zsh)" "$USER" || log_warning "Failed to set zsh as default. Run 'chsh -s $(which zsh)' manually."
+    fi
+}
+
 # Essential tools
 task_curl()         { sys_install "curl"; }
 task_wget()         { sys_install "wget"; }
@@ -105,7 +154,6 @@ task_git()          { sys_install "git"; }
 task_alacritty()    { sys_install "alacritty"; }
 
 # Development tools
-task_zsh()      { sys_install "zsh"; }
 task_tmux()     { sys_install "tmux"; }
 task_fzf()      { sys_install "fzf"; }
 task_bat()      { sys_install "bat"; }
