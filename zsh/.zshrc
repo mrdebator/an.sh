@@ -54,3 +54,8 @@ if command -v bat &>/dev/null; then
 elif command -v batcat &>/dev/null; then
     alias cat="$(command -v batcat)"
 fi
+
+# Load local aliases, tokens, or configs that shouldn't be in Git.
+if [[ -f "$HOME/.zshrc.local" ]]; then
+    source "$HOME/.zshrc.local"
+fi

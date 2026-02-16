@@ -1,2 +1,5 @@
 backups/*
 nvim/.config/nvim/lazy-lock.json
+# Ignore local secrets and overrides
+*.local
+.zshrc.local
