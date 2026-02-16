@@ -37,17 +37,48 @@ return {
 			dependencies = { "williamboman/mason.nvim" },
 			-- This ensures the debug adapters are installed when you run :Mason
 			opts = {
-				ensure_installed = { "delve" }, -- The Go debugger
+				ensure_installed = { "delve", "codelldb" }, -- The Go debugger
 				handlers = {}, -- Let mason-nvim-dap handle the setup
 			},
 		},
 	},
 	config = function()
+        local dap = require("dap")
+
 		-- This is the key to making launch.json work.
 		-- It tells dap to look for and load configurations from this file.
 		require("dap.ext.vscode").load_launchjs(nil, {
 			delve = { "go" }, -- Maps the 'delve' adapter to the 'go' filetype
+            codelldb = { "c", "cpp" }, -- Map codelldb to C and C++
 		})
+
+        -- C/C++ Fallback Configuration (If no launch.json exists)
+        -- This prompts for the path to the compiled binary
+        dap.configurations.c = {
+            {
+                name = "Launch compiled binary",
+                type = "codelldb",
+                request = "launch",
+                program = function()
+                    return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+                end,
+                cwd = '${workspaceFolder}',
+                stopOnEntry = false,
+                args = {},
+            },
+            {
+                name = "Attach to QEMU (localhost:1234)",
+                type = "codelldb",
+                request = "attach",
+                targetCreateCommands = {"target create ${workspaceFolder}/vmlinux"},
+                processCreateCommands = {"gdb-remote localhost:1234"},
+                cwd = '${workspaceFolder}',
+                stopOnEntry = false,
+            },
+        }
+
+        -- Map C++ configuration to C (they use the same adapter)
+        dap.configurations.cpp = dap.configurations.c
 
 		-- Configure the helper plugins
 		require("dap-go").setup()

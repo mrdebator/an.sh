@@ -83,6 +83,9 @@ map("n", "<leader>dr", function()
 	require("dap").repl.open()
 end, { desc = "Debug: Open REPL" })
 map("n", "<leader>dl", function()
-	-- This is the keymap that opens your launch.json configurations
+	-- This is the keymap that opens launch.json configurations
 	require("dap").run_last()
 end, { desc = "Debug: Launch Last" })
+map("n", "<leader>dq", function()
+    require("dap").terminate()
+end, { desc = "Debug: Quit/Terminate" })
