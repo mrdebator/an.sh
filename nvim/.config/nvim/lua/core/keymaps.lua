@@ -61,6 +61,12 @@ map("n", "<leader>qq", ":qa!<CR>", { desc = "Force quit all" })
 -- Lazygit toggle
 map("n", "<leader>gg", "<cmd>LazyGit<cr>", opts)
 
+-- Window splitting
+map("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
+map("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
+map("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
+map("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
+
 -- =======================================================================
 -- DEBUGGER (DAP)
 -- =======================================================================
