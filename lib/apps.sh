@@ -54,12 +54,12 @@ install_github_appimage() {
 
     # 3. Find the download URL
     local download_url
-    download_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" \
-        | grep "browser_download_url" \
-        | grep -i "$search_term" \
-        | grep -v "arm64" \
-        | cut -d '"' -f 4 \
-        | head -n 1)
+    download_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" |
+        grep "browser_download_url" |
+        grep -i "$search_term" |
+        grep -v "arm64" |
+        cut -d '"' -f 4 |
+        head -n 1)
 
     if [[ -z "$download_url" ]]; then
         log_error "Could not find asset for $app_name matching '$search_term'"
@@ -88,11 +88,10 @@ install_github_appimage() {
     ln -sf "$app_dir/binary/AppRun" "$bin_dir/${app_name,,}"
 
     # Save Version
-    echo "$latest_tag" > "$version_file"
+    echo "$latest_tag" >"$version_file"
 
     log_success "$app_name updated to $latest_tag"
 }
-
 
 # ------------------------------------------------------------------------------
 #  Tasks: Core Tools (Wrappers)
@@ -148,22 +147,47 @@ task_zsh() {
 }
 
 # Essential tools
-task_curl()         { sys_install "curl"; }
-task_wget()         { sys_install "wget"; }
-task_git()          { sys_install "git"; }
-task_alacritty()    { sys_install "alacritty"; }
+task_gcc() { sys_install "gcc"; }
+task_curl() { sys_install "curl"; }
+task_wget() { sys_install "wget"; }
+task_git() { sys_install "git"; }
+task_alacritty() { sys_install "alacritty"; }
 
 # Development tools
-task_tmux()     { sys_install "tmux"; }
-task_fzf()      { sys_install "fzf"; }
-task_bat()      { sys_install "bat"; }
-task_stow()     { sys_install "stow"; }
-task_neovim()   { sys_install "nvim" "neovim"; }
-task_ripgrep()  { sys_install "rg" "ripgrep"; }
+task_tmux() {
+    sys_install "tmux"
+
+    local TMUX_PLUGIN_DIR="$HOME/.config/tmux/plugins/catppuccin/tmux"
+
+    # Check if the directory exists AND is a valid git repository.
+    if [[ ! -d "$TMUX_PLUGIN_DIR/.git" ]]; then
+        log_info "Cloning Catppuccin tmux theme..."
+        mkdir -p "$(dirname "$TMUX_PLUGIN_DIR")"
+
+        # If the clone fails, log the error and return 0 to 'set -e' doesn't kill the script.
+        if ! git clone -q https://github.com/catppuccin/tmux.git "$TMUX_PLUGIN_DIR"; then
+            log_error "Failed to clone Catppuccin tmux theme. Skipping."
+            return 0
+        fi
+    else
+        log_info "Updating Catppuccin tmux theme..."
+
+        # --ff-only prevents accidental merge commits if you locally modified the theme files.
+        if ! git -C "$TMUX_PLUGIN_DIR" pull --ff-only; then
+            log_error "Failed to update Catppuccin tmux theme. Skipping."
+            return 0
+        fi
+    fi
+}
+task_fzf() { sys_install "fzf"; }
+task_bat() { sys_install "bat"; }
+task_stow() { sys_install "stow"; }
+task_neovim() { sys_install "nvim" "neovim"; }
+task_ripgrep() { sys_install "rg" "ripgrep"; }
 
 # Neovim dependencies
 task_node() { sys_install "node" "nodejs"; }
-task_go()   { sys_install "go" "golang"; }
+task_go() { sys_install "go" "golang"; }
 
 # ------------------------------------------------------------------------------
 #  Tasks: Complex Apps (Personal / Manual)
@@ -191,7 +215,7 @@ task_obsidian() {
             # Download Icon
             wget -q -O "$HOME/Applications/Obsidian/icon.svg" "https://upload.wikimedia.org/wikipedia/commons/1/10/2023_Obsidian_logo.svg"
 
-            cat <<EOF > "$desktop_file"
+            cat <<EOF >"$desktop_file"
 [Desktop Entry]
 Name=Obsidian
 Exec=$HOME/Applications/Obsidian/binary/AppRun
@@ -295,7 +319,7 @@ task_ticktick() {
     # Grab a high-res icon (TickTick doesn't have a clean SVG url)
     wget -q -O "$app_dir/icon.png" "https://upload.wikimedia.org/wikipedia/commons/6/68/Font_Awesome_5_solid_tasks.svg"
 
-    cat <<EOF > "$desktop_file"
+    cat <<EOF >"$desktop_file"
 [Desktop Entry]
 Name=TickTick
 Exec=$bin_dir/ticktick
@@ -309,7 +333,7 @@ EOF
     update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 
     # Save Version
-    echo "$latest_version" > "$version_file"
+    echo "$latest_version" >"$version_file"
     log_success "$app_name updated to $latest_version"
 }
 
@@ -324,8 +348,8 @@ task_chrome() {
             log_success "Google Chrome is already installed."
         fi
     elif [[ "$(detect_package_manager)" == "dnf" ]]; then
-            sys_enable_fedora_repos
-            sys_install "google-chrome-stable"
+        sys_enable_fedora_repos
+        sys_install "google-chrome-stable"
     else
         log_warning "Chrome install logic only implemented for MacOS and Fedora (dnf) currently."
     fi
@@ -394,11 +418,11 @@ task_gcm() {
 
     local gcm_repo="git-ecosystem/git-credential-manager"
     local download_url
-    download_url=$(curl -s "https://api.github.com/repos/$gcm_repo/releases/latest" \
-        | grep "browser_download_url" \
-        | grep "linux_x64.*tar.gz" \
-        | cut -d '"' -f 4 \
-        | head -n 1)
+    download_url=$(curl -s "https://api.github.com/repos/$gcm_repo/releases/latest" |
+        grep "browser_download_url" |
+        grep "linux_x64.*tar.gz" |
+        cut -d '"' -f 4 |
+        head -n 1)
 
     if [[ -z "$download_url" ]]; then
         log_error "Could not find GCM download url"

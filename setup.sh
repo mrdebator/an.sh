@@ -21,6 +21,7 @@ source "$SCRIPT_DIR/lib/stow.sh"
 APPS_COMMON=(
     "git"
     "zsh"
+    "gcc"
     "neovim"
     "tmux"
     "fzf"
@@ -59,10 +60,16 @@ TARGET="all"
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
-        --work) PROFILE="work" ;;
-        --personal) PROFILE="personal" ;;
-        --target) TARGET="$2"; shift ;;
-        *) log_error "Unknown parameter: $1"; exit 1 ;;
+    --work) PROFILE="work" ;;
+    --personal) PROFILE="personal" ;;
+    --target)
+        TARGET="$2"
+        shift
+        ;;
+    *)
+        log_error "Unknown parameter: $1"
+        exit 1
+        ;;
     esac
     shift
 done
