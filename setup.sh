@@ -44,6 +44,7 @@ APPS_PERSONAL=(
     "docker"
     "chrome"
     "gcm"
+    "gemini"
 )
 
 # Installed ONLY on Work machines

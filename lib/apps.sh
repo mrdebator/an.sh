@@ -187,6 +187,59 @@ task_ripgrep() { sys_install "rg" "ripgrep"; }
 
 # Neovim dependencies
 task_node() { sys_install "node" "nodejs"; }
+
+task_gemini() {
+    # Only install on Linux
+    if [[ "$(get_os)" == "Darwin" ]]; then
+        log_info "Skipping Gemini CLI installation on macOS."
+        return 0
+    fi
+
+    log_info "Installing gVisor (runsc) for Gemini CLI sandbox..."
+    
+    local ARCH=$(uname -m)
+    local URL="https://storage.googleapis.com/gvisor/releases/release/latest/${ARCH}"
+    local TMP_DIR="/tmp/gvisor_install"
+    
+    mkdir -p "$TMP_DIR"
+    
+    # Download runsc and its checksum, gracefully handling wget errors for set -e
+    wget -q -O "$TMP_DIR/runsc" "${URL}/runsc" || {
+        log_error "Failed to download runsc"
+        return 0
+    }
+    wget -q -O "$TMP_DIR/runsc.sha512" "${URL}/runsc.sha512" || {
+        log_error "Failed to download runsc checksum"
+        return 0
+    }
+
+    # Verify checksum
+    cd "$TMP_DIR"
+    if sha512sum -c runsc.sha512 >/dev/null 2>&1; then
+        chmod a+rx runsc
+        sudo mv runsc /usr/local/bin/ || {
+            log_error "Failed to move runsc to /usr/local/bin"
+            return 0
+        }
+        
+        # Configure Docker Daemon
+        log_info "Configuring Docker daemon with runsc..."
+        sudo /usr/local/bin/runsc install || log_error "Failed to install runsc to docker"
+        sudo systemctl restart docker || log_error "Failed to restart docker"
+        log_success "gVisor (runsc) installed and configured."
+    else
+        log_error "gVisor checksum verification failed. Skipping installation."
+    fi
+    
+    rm -rf "$TMP_DIR"
+    
+    log_info "Installing @google/gemini-cli..."
+    npm install -g @google/gemini-cli || {
+        log_error "Failed to install @google/gemini-cli. Skipping."
+        return 0
+    }
+}
+
 task_go() { sys_install "go" "golang"; }
 
 # ------------------------------------------------------------------------------
