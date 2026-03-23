@@ -45,12 +45,6 @@ return {
 	config = function()
         local dap = require("dap")
 
-		-- This is the key to making launch.json work.
-		-- It tells dap to look for and load configurations from this file.
-		require("dap.ext.vscode").load_launchjs(nil, {
-			delve = { "go" }, -- Maps the 'delve' adapter to the 'go' filetype
-            codelldb = { "c", "cpp" }, -- Map codelldb to C and C++
-		})
 
         -- C/C++ Fallback Configuration (If no launch.json exists)
         -- This prompts for the path to the compiled binary
