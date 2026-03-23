@@ -3,22 +3,23 @@
 return {
 	"nvim-treesitter/nvim-treesitter",
 	build = ":TSUpdate",
-	config = function()
-		require("nvim-treesitter.configs").setup({
+        event = { "BufReadPre", "BufNewFile" },
+        main = "nvim-treesitter.configs",
+        opts = {
 			ensure_installed = {
 				"bash",
 				"c",
 				"go",
-				"javascript",
-				"json",
-				"lua",
-				"markdown",
-				"markdown_inline",
-				"proto",
-				"python",
-				"toml",
-				"typescript",
-				"yaml",
+			    "javascript",
+                "json",
+			    "lua",
+			    "markdown",
+			    "markdown_inline",
+			    "proto",
+                "python",
+			    "toml",
+			    "typescript",
+			    "yaml",
 			},
 			-- Install parsers synchronously (only applied to `ensure_installed`)
 			sync_install = false,
@@ -31,6 +32,5 @@ return {
 			indent = {
 				enable = true,
 			},
-		})
-	end,
+        }
 }
