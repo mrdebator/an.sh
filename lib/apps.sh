@@ -238,6 +238,12 @@ task_gemini() {
         log_error "Failed to install @google/gemini-cli. Skipping."
         return 0
     }
+
+    local zshrc_local="$HOME/.zshrc.local"
+    if ! grep -q "export GEMINI_SANDBOX=runsc" "$zshrc_local" 2>/dev/null; then
+        log_info "Adding GEMINI_SANDBOX to $zshrc_local"
+        echo "export GEMINI_SANDBOX=runsc" >> "$zshrc_local"
+    fi
 }
 
 task_go() { sys_install "go" "golang"; }
